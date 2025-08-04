@@ -1,10 +1,8 @@
 package com.dorrin.domain.model
 
-import java.time.LocalDateTime
-
 data class CurrencyExchangeRate(
-  val from: Money,
-  val to: Money,
+  val from: Currency,
+  val to: Currency,
   val rate: Float,
-  val time: LocalDateTime
+  val time: DateTime
 )
