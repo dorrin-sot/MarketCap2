@@ -1,6 +1,6 @@
 package com.dorrin.data.entities
 
-internal data class DateTimeEntity(
+data class DateTimeEntity(
   val year: Int,
   val month: Int = 1,
   val day: Int = 1,

@@ -11,7 +11,8 @@ internal class AllCurrenciesRepositoryImpl(
   private val _allCurrencies = MutableLiveData<List<CurrencyEntity>>()
   val allCurrencies: LiveData<List<CurrencyEntity>> get() = _allCurrencies
 
-  override fun getAllCurrencies() {
+  override fun getAllCurrencies(): LiveData<List<CurrencyEntity>> {
     _allCurrencies.value = dataSource.getAllCurrencies()
+    return allCurrencies
   }
 }

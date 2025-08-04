@@ -1,6 +1,6 @@
 package com.dorrin.data.entities
 
-internal data class CurrencyExchangeRateEntity(
+data class CurrencyExchangeRateEntity(
   val from: CurrencyEntity,
   val to: CurrencyEntity,
   val rate: Float,
