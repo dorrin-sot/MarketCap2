@@ -1,16 +1,17 @@
 package com.dorrin.data.source
 
+import com.dorrin.data.entities.CountryEntity
 import com.dorrin.data.entities.CurrencyEntity
 import com.dorrin.data.entities.CurrencyExchangeRateEntity
 import com.dorrin.data.entities.DateTimeEntity
 import kotlin.random.Random
 
-internal class InMemoryDataSource : DataSource {
+class InMemoryDataSource : DataSource { // todo "internal"
   private val allCurrencies = listOf(
-    CurrencyEntity("USD", "United States Dollars", "United States"),
-    CurrencyEntity("EUR", "Euro", "Europe"),
-    CurrencyEntity("GBP", "Great Britain Pounds", "Great Britain"),
-    CurrencyEntity("CAD", "Canadian Dollars", "Canada"),
+    CurrencyEntity(0, "USD", "United States Dollars", CountryEntity("US", "United States", "🇺🇸")),
+    CurrencyEntity(1, "EUR", "Euro", CountryEntity("EU", "Europe", "🇪🇺")),
+    CurrencyEntity(2, "GBP", "Great Britain Pounds", CountryEntity("GB", "Great Britain", "🇬🇧")),
+    CurrencyEntity(3, "CAD", "Canadian Dollars", CountryEntity("CA", "Canada", "🇨🇦")),
   )
 
   override fun getAllCurrencies(): List<CurrencyEntity> = allCurrencies

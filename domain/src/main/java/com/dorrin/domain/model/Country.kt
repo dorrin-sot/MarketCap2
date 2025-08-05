@@ -1,8 +1,7 @@
 package com.dorrin.domain.model
 
-data class Currency(
-  val id: Long,
+data class Country(
   val shortName: String,
   val longName: String,
-  val country: Country,
+  val flag: String,
 )

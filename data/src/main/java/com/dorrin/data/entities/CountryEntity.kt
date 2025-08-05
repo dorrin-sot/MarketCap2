@@ -1,8 +1,7 @@
 package com.dorrin.data.entities
 
-data class CurrencyEntity(
-  val id: Long,
+data class CountryEntity(
   val shortName: String,
   val longName: String,
-  val country: CountryEntity,
+  val flag: String,
 )
