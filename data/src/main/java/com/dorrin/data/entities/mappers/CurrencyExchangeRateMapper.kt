@@ -1,4 +1,4 @@
-package com.dorrin.domain.model.mappers
+package com.dorrin.data.entities.mappers
 
 import com.dorrin.data.entities.CurrencyExchangeRateEntity
 import com.dorrin.domain.model.CurrencyExchangeRate

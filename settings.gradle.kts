@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "MarketCap"
 include(":app")
 include(":domain")
+include(":domain")
 include(":data")
