@@ -4,6 +4,7 @@ import com.dorrin.data.entities.CountryEntity
 import com.dorrin.data.entities.CurrencyEntity
 import com.dorrin.data.entities.CurrencyExchangeRateEntity
 import com.dorrin.data.entities.DateTimeEntity
+import io.reactivex.rxjava3.core.Single
 import kotlin.random.Random
 
 class InMemoryDataSource : DataSource { // todo "internal"
@@ -14,7 +15,8 @@ class InMemoryDataSource : DataSource { // todo "internal"
     CurrencyEntity(3, "CAD", "Canadian Dollars", CountryEntity("CA", "Canada", "🇨🇦")),
   )
 
-  override fun getAllCurrencies(): List<CurrencyEntity> = allCurrencies
+  override fun getAllCurrencies(): Single<List<CurrencyEntity>> =
+    Single.create { it.onSuccess(allCurrencies) }
 
   override fun getExchangeRate(
     from: CurrencyEntity,

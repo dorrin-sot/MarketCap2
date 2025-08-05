@@ -1,18 +1,14 @@
 package com.dorrin.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.dorrin.data.entities.CurrencyEntity
+import com.dorrin.data.entities.mappers.toCurrency
 import com.dorrin.data.source.DataSource
+import com.dorrin.domain.model.Currency
 import com.dorrin.domain.repository.AllCurrenciesRepository
+import io.reactivex.rxjava3.core.Single
 
 internal class AllCurrenciesRepositoryImpl(
   private val dataSource: DataSource
 ) : AllCurrenciesRepository {
-  private val _allCurrencies = MutableLiveData<List<CurrencyEntity>>()
-  val allCurrencies: LiveData<List<CurrencyEntity>> get() = _allCurrencies
-
-  override fun fetchAllCurrencies() {
-    _allCurrencies.value = dataSource.getAllCurrencies()
-  }
+  override fun fetchAllCurrencies(): Single<List<Currency>> =
+    dataSource.getAllCurrencies().map { entities -> entities.map { entity -> entity.toCurrency() } }
 }

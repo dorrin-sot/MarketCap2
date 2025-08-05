@@ -6,42 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
-import com.dorrin.data.entities.mappers.toCurrency
-import com.dorrin.data.entities.mappers.toCurrencyEntity
-import com.dorrin.data.entities.mappers.toCurrencyExchangeRate
-import com.dorrin.data.source.InMemoryDataSource
-import com.dorrin.domain.model.Currency
-import com.dorrin.domain.model.CurrencyExchangeRate
-import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
-import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
+import androidx.fragment.app.viewModels
 import com.dorrin.presentation.databinding.FragmentConversionBinding
 
 class ConversionFragment : Fragment() {
   private var _binding: FragmentConversionBinding? = null
   private val binding get() = _binding!!
 
-  private lateinit var viewModel: ConversionViewModel
+  private val viewModel: ConversionViewModel by viewModels()
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    val inMemorySource = InMemoryDataSource()
-
-    viewModel = ConversionViewModel(
-      ConversionPresenter(),
-      object : GetAllCurrenciesUseCase {
-        override fun invoke(): List<Currency> =
-          inMemorySource.getAllCurrencies().map { it.toCurrency() }
-      },
-      object : GetCurrencyExchangeRateUseCase {
-        override fun invoke(from: Currency, to: Currency): CurrencyExchangeRate =
-          inMemorySource.getExchangeRate(from.toCurrencyEntity(), to.toCurrencyEntity())
-            .toCurrencyExchangeRate()
-      }
-    )
-
     _binding = FragmentConversionBinding.inflate(
       inflater,
       container,
