@@ -11,5 +11,5 @@ internal class AllCurrenciesRepositoryImpl @Inject constructor(
   private val dataSource: DataSource
 ) : AllCurrenciesRepository {
   override fun fetchAllCurrencies(): Single<List<Currency>> =
-    dataSource.getAllCurrencies().map { entities -> entities.map { entity -> entity.toCurrency() } }
+    dataSource.getAllCurrencies().map { entities -> entities.map { entity -> entity.toCurrency() }.also { println(entities) } }
 }

@@ -1,16 +1,17 @@
 package com.dorrin.presentation.conversion
 
-import android.annotation.SuppressLint
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.dorrin.domain.model.Currency
 import com.dorrin.domain.model.CurrencyExchangeRate
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,13 +31,16 @@ internal class ConversionViewModel @Inject constructor(
   private var _conversion = MutableLiveData<CurrencyExchangeRate?>()
   private val conversion: LiveData<CurrencyExchangeRate?> get() = _conversion
 
-  val allCurrencyLongNames = allCurrencies.map { it.map { currency -> currency.longName } }
+  val allCurrencyLongNames: LiveData<String>
+    get() = _allCurrencies.map {
+      it.joinToString(",", "\"", "\"") { currency -> currency.longName }
+    }
 
-  val sourceCurrencyLongName = sourceCurrency.map { it.longName }
-  val sourceCurrencyShortName = sourceCurrency.map { it.shortName }
+  val sourceCurrencyLongName get() = sourceCurrency.map { it.longName }
+  val sourceCurrencyShortName get() = sourceCurrency.map { it.shortName }
 
-  val targetCurrencyLongName = targetCurrency.map { it.longName }
-  val targetCurrencyShortName = targetCurrency.map { it.shortName }
+  val targetCurrencyLongName get() = targetCurrency.map { it.longName }
+  val targetCurrencyShortName get() = targetCurrency.map { it.shortName }
 
   val conversionDisplay = conversion.map {
     it ?: return@map ""
@@ -46,12 +50,15 @@ internal class ConversionViewModel @Inject constructor(
     if (it.isEmpty()) View.GONE else View.VISIBLE
   }
 
-  @SuppressLint("CheckResult")
   fun fetchAllCurrencies() {
-    getAllCurrenciesUseCase()
-      .doOnSuccess { _allCurrencies.value = it }
-      .doOnError { it.printStackTrace() }
-      .retry(3)
+    viewModelScope.launch {
+      getAllCurrenciesUseCase()
+        .retry(3)
+        .blockingGet()
+        .also {
+          _allCurrencies.value = it
+        }
+    }
   }
 
   fun selectSourceCurrency(id: Long) {
@@ -64,19 +71,20 @@ internal class ConversionViewModel @Inject constructor(
     performConversion()
   }
 
-  @SuppressLint("CheckResult")
   fun performConversion() {
     val source = sourceCurrency.value
     val target = targetCurrency.value
-    
+
     if (source == null || target == null) {
       _conversion.value = null
       return
     }
 
-    currencyExchangeRateUseCase(source!!, target!!)
-      .doOnSuccess { _conversion.value = it }
-      .doOnError { it.printStackTrace() }
-      .retry(3)
+    viewModelScope.launch {
+      currencyExchangeRateUseCase(source, target)
+        .retry(3)
+        .blockingGet()
+        .also { _conversion.value = it }
+    }
   }
 }

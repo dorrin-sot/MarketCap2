@@ -1,10 +1,12 @@
 package com.dorrin.presentation.conversion
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -20,16 +22,22 @@ class ConversionFragment : Fragment() {
   private val viewModel by viewModels<ConversionViewModel>()
 
   val allCurrenciesObserver = object : Observer<List<Currency>> {
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onChanged(value: List<Currency>) {
       val context = requireContext()
-      binding.sourceCurrencySelector.run {
-        setAdapter(CurrencyAdapter(context, value))
-        onItemSelectedListener = SourceOnItemSelectedListener()
-      }
-      binding.targetCurrencySelector.run {
-        setAdapter(CurrencyAdapter(context, value))
-        onItemSelectedListener = TargetOnItemSelectedListener()
-      }
+      _binding?.sourceCurrencySelector?.onItemSelectedListener = SourceOnItemSelectedListener()
+      _binding?.targetCurrencySelector?.onItemSelectedListener = TargetOnItemSelectedListener()
+
+      arrayOf(_binding?.sourceCurrencySelector, _binding?.targetCurrencySelector)
+        .filterNotNull()
+        .forEach { atv ->
+          atv.setAdapter(CurrencyAdapter(context, value))
+          atv.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) atv.showDropDown()
+            else atv.dismissDropDown()
+          }
+          atv.threshold = 1
+        }
     }
   }
 
