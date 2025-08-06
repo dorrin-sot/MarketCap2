@@ -21,26 +21,28 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Source Currency">
+            android:hint="@string/source_currency">
 
             <AutoCompleteTextView
                 android:id="@+id/sourceCurrencySelector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null" />
+                android:background="@null"
+                android:hint="@string/source_currency" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Target Currency">
+            android:hint="@string/target_currency">
 
             <AutoCompleteTextView
                 android:id="@+id/targetCurrencySelector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null" />
+                android:background="@null"
+                android:hint="@string/target_currency" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView

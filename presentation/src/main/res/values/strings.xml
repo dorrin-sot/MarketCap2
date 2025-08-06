@@ -1,1 +1,4 @@
-<resources></resources>
+<resources>
+    <string name="target_currency">Target Currency</string>
+    <string name="source_currency">Source Currency</string>
+</resources>
