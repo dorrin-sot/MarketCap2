@@ -5,9 +5,10 @@ import com.dorrin.data.entities.CurrencyEntity
 import com.dorrin.data.entities.CurrencyExchangeRateEntity
 import com.dorrin.data.entities.DateTimeEntity
 import io.reactivex.rxjava3.core.Single
+import javax.inject.Inject
 import kotlin.random.Random
 
-class InMemoryDataSource : DataSource { // todo "internal"
+internal class InMemoryDataSource @Inject constructor() : DataSource {
   private val allCurrencies = listOf(
     CurrencyEntity(0, "USD", "United States Dollars", CountryEntity("US", "United States", "🇺🇸")),
     CurrencyEntity(1, "EUR", "Euro", CountryEntity("EU", "Europe", "🇪🇺")),
@@ -21,9 +22,10 @@ class InMemoryDataSource : DataSource { // todo "internal"
   override fun getExchangeRate(
     from: CurrencyEntity,
     to: CurrencyEntity
-  ): CurrencyExchangeRateEntity {
+  ): Single<CurrencyExchangeRateEntity> {
     val randomRate = Random((from to to).hashCode()).nextFloat()
     val time = DateTimeEntity(2025, 8, 4, 20)
-    return CurrencyExchangeRateEntity(from, to, randomRate, time)
+    val exchangeRate = CurrencyExchangeRateEntity(from, to, randomRate, time)
+    return Single.create { it.onSuccess(exchangeRate) }
   }
 }

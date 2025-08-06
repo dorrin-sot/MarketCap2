@@ -10,12 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.dorrin.domain.model.Currency
 import com.dorrin.presentation.databinding.FragmentConversionBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ConversionFragment : Fragment() {
   private var _binding: FragmentConversionBinding? = null
   private val binding get() = _binding!!
 
-  private val viewModel: ConversionViewModel by viewModels()
+  private val viewModel by viewModels<ConversionViewModel>()
 
   val allCurrenciesObserver = object : Observer<List<Currency>> {
     override fun onChanged(value: List<Currency>) {

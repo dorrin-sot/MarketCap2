@@ -10,8 +10,11 @@ import com.dorrin.domain.model.Currency
 import com.dorrin.domain.model.CurrencyExchangeRate
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-internal class ConversionViewModel(
+@HiltViewModel
+internal class ConversionViewModel @Inject constructor(
   private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase,
   private val currencyExchangeRateUseCase: GetCurrencyExchangeRateUseCase,
 ) : ViewModel() {
@@ -61,13 +64,19 @@ internal class ConversionViewModel(
     performConversion()
   }
 
+  @SuppressLint("CheckResult")
   fun performConversion() {
-    (sourceCurrency.value to targetCurrency.value)
-      .let { (source, target) ->
-        source ?: return@let null
-        target ?: return@let null
-        return@let source to target
-      }?.let { (source, target) -> currencyExchangeRateUseCase(source, target) }
-      .also { rate: CurrencyExchangeRate? -> _conversion.value = rate }
+    val source = sourceCurrency.value
+    val target = targetCurrency.value
+    
+    if (source == null || target == null) {
+      _conversion.value = null
+      return
+    }
+
+    currencyExchangeRateUseCase(source!!, target!!)
+      .doOnSuccess { _conversion.value = it }
+      .doOnError { it.printStackTrace() }
+      .retry(3)
   }
 }
