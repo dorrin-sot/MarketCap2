@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.dorrin.domain.model.Currency
 import com.dorrin.presentation.databinding.FragmentConversionBinding
 
 class ConversionFragment : Fragment() {
@@ -14,6 +16,20 @@ class ConversionFragment : Fragment() {
   private val binding get() = _binding!!
 
   private val viewModel: ConversionViewModel by viewModels()
+
+  val allCurrenciesObserver = object : Observer<List<Currency>> {
+    override fun onChanged(value: List<Currency>) {
+      val context = requireContext()
+      binding.sourceCurrencySelector.run {
+        setAdapter(CurrencyAdapter(context, value))
+        onItemSelectedListener = SourceOnItemSelectedListener()
+      }
+      binding.targetCurrencySelector.run {
+        setAdapter(CurrencyAdapter(context, value))
+        onItemSelectedListener = TargetOnItemSelectedListener()
+      }
+    }
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -29,25 +45,24 @@ class ConversionFragment : Fragment() {
     return binding.root
   }
 
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    viewModel.allCurrencies.observeForever(allCurrenciesObserver)
+  }
+
   override fun onStart() {
     super.onStart()
-
     viewModel.fetchAllCurrencies()
-    val allCurrencies = viewModel.presenter.allCurrencies
-
-    val context = requireContext()
-    binding.sourceCurrencySelector.run {
-      setAdapter(CurrencyAdapter(context, allCurrencies))
-      onItemSelectedListener = SourceOnItemSelectedListener()
-    }
-    binding.targetCurrencySelector.run {
-      setAdapter(CurrencyAdapter(context, allCurrencies))
-      onItemSelectedListener = TargetOnItemSelectedListener()
-    }
   }
 
   override fun onDestroy() {
     super.onDestroy()
+    viewModel.allCurrencies.observeForever(allCurrenciesObserver)
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    _binding?.unbind()
     _binding = null
   }
 
