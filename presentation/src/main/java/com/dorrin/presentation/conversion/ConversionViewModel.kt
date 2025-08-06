@@ -31,11 +31,6 @@ internal class ConversionViewModel @Inject constructor(
   private var _conversion = MutableLiveData<CurrencyExchangeRate?>()
   private val conversion: LiveData<CurrencyExchangeRate?> get() = _conversion
 
-  val allCurrencyLongNames: LiveData<String>
-    get() = _allCurrencies.map {
-      it.joinToString(",", "\"", "\"") { currency -> currency.longName }
-    }
-
   val sourceCurrencyLongName get() = sourceCurrency.map { it.longName }
   val sourceCurrencyShortName get() = sourceCurrency.map { it.shortName }
 

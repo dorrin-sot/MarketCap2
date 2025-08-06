@@ -8,21 +8,10 @@
             type="com.dorrin.domain.model.Currency" />
     </data>
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="10dp"
-            android:text="@{currency.country.flag}" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{currency.shortName}" />
-    </LinearLayout>
+        android:paddingEnd="10dp"
+        android:text="@{currency.toString()}" />
 
 </layout>

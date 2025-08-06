@@ -5,4 +5,8 @@ data class Currency(
   val shortName: String,
   val longName: String,
   val country: Country,
-)
+) {
+  override fun toString(): String {
+    return "${country.flag} $shortName - $longName"
+  }
+}

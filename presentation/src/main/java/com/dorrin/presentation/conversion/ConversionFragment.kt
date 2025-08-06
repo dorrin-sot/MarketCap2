@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.AutoCompleteTextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.dorrin.domain.model.Currency
+import com.dorrin.presentation.R
 import com.dorrin.presentation.databinding.FragmentConversionBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,22 +25,22 @@ class ConversionFragment : Fragment() {
 
   val allCurrenciesObserver = object : Observer<List<Currency>> {
     @RequiresApi(Build.VERSION_CODES.Q)
-    override fun onChanged(value: List<Currency>) {
-      val context = requireContext()
-      _binding?.sourceCurrencySelector?.onItemSelectedListener = SourceOnItemSelectedListener()
-      _binding?.targetCurrencySelector?.onItemSelectedListener = TargetOnItemSelectedListener()
+    override fun onChanged(value: List<Currency>) =
+      arrayOf(
+        _binding?.sourceCurrencySelector,
+        _binding?.targetCurrencySelector
+      ).filterNotNull()
+        .forEach { atv: AutoCompleteTextView ->
+          atv.setAdapter(CurrencyAdapter(requireContext(), value))
 
-      arrayOf(_binding?.sourceCurrencySelector, _binding?.targetCurrencySelector)
-        .filterNotNull()
-        .forEach { atv ->
-          atv.setAdapter(CurrencyAdapter(context, value))
-          atv.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) atv.showDropDown()
-            else atv.dismissDropDown()
+          atv.onItemClickListener = when (atv.id) {
+            R.id.sourceCurrencySelector -> SourceOnItemSelectedListener()
+            R.id.targetCurrencySelector -> TargetOnItemSelectedListener()
+            else -> throw IllegalAccessException()
           }
-          atv.threshold = 1
+
+          atv.threshold = 1 // values of less than 0 don't work
         }
-    }
   }
 
   override fun onCreateView(
@@ -51,6 +53,9 @@ class ConversionFragment : Fragment() {
       container,
       false
     )
+
+    binding.viewModel = viewModel
+    binding.lifecycleOwner = viewLifecycleOwner
 
     return binding.root
   }
@@ -67,7 +72,7 @@ class ConversionFragment : Fragment() {
 
   override fun onDestroy() {
     super.onDestroy()
-    viewModel.allCurrencies.observeForever(allCurrenciesObserver)
+    viewModel.allCurrencies.removeObserver(allCurrenciesObserver)
   }
 
   override fun onDestroyView() {
@@ -76,20 +81,14 @@ class ConversionFragment : Fragment() {
     _binding = null
   }
 
-  inner class SourceOnItemSelectedListener : AdapterView.OnItemSelectedListener {
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
+  inner class SourceOnItemSelectedListener : AdapterView.OnItemClickListener {
+    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
       viewModel.selectSourceCurrency(id)
-
-    override fun onNothingSelected(parent: AdapterView<*>?) =
-      viewModel.selectSourceCurrency(-1)
   }
 
-  inner class TargetOnItemSelectedListener : AdapterView.OnItemSelectedListener {
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
+  inner class TargetOnItemSelectedListener : AdapterView.OnItemClickListener {
+    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
       viewModel.selectTargetCurrency(id)
-
-    override fun onNothingSelected(parent: AdapterView<*>?) =
-      viewModel.selectTargetCurrency(-1)
   }
 
   companion object {

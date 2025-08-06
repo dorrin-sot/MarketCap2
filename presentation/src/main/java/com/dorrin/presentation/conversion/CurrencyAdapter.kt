@@ -6,21 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.dorrin.domain.model.Currency
 import com.dorrin.presentation.R
 import com.dorrin.presentation.databinding.HolderDropdownCurrencyItemBinding
 
-internal class CurrencyAdapter(
-  context: Context,
-  private val currencies: List<Currency>
-) : ArrayAdapter<Currency>(
-  context,
-  R.layout.holder_dropdown_currency_item,
-  currencies,
-) {
+internal class CurrencyAdapter : ArrayAdapter<Currency> {
+  private val allCurrencies: Array<Currency>
+  private val currencies: MutableList<Currency>
+
+  constructor(context: Context, currencies: List<Currency> = listOf()) :
+      super(context, R.layout.holder_dropdown_currency_item) {
+    this.allCurrencies = arrayOf(*currencies.toTypedArray())
+    this.currencies = currencies.toMutableList()
+  }
+
   private val _filter = CurrenciesFilter()
 
-  override fun getItemId(position: Int): Long = getItem(position)?.id ?: 0L
+  override fun getItem(position: Int): Currency = currencies[position]
+
+  override fun getItemId(position: Int): Long = getItem(position).id
 
   override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
     createBindingView(position, convertView, parent)
@@ -29,59 +34,50 @@ internal class CurrencyAdapter(
     createBindingView(position, convertView, parent)
 
   private fun createBindingView(position: Int, convertView: View?, parent: ViewGroup): View {
-    val binding = if (convertView == null) {
-      val inflater = LayoutInflater.from(parent.context)
+    val inflater = LayoutInflater.from(parent.context)
+    val binding = HolderDropdownCurrencyItemBinding.inflate(inflater, parent, false)
 
-      HolderDropdownCurrencyItemBinding.inflate(
-        inflater,
-        parent,
-        false
-      )
-    } else {
-      HolderDropdownCurrencyItemBinding.bind(convertView)
-    }
-
-    val item = getItem(position)!!
+    val item = getItem(position)
     binding.currency = item
+    binding.lifecycleOwner = parent.findViewTreeLifecycleOwner()
     binding.executePendingBindings()
 
-//    binding.root.tag = item
-
     return binding.root
+  }
+
+  fun updateData(newList: List<Currency>) {
+    clear()
+    addAll(newList)
+    notifyDataSetChanged()
   }
 
   override fun getFilter(): Filter = _filter
 
   private inner class CurrenciesFilter() : Filter() {
-    override fun convertResultToString(resultValue: Any?): String =
-      (resultValue as Currency).let { "${it.country.flag} ${it.shortName} ${it.longName}" }
+    override fun convertResultToString(resultValue: Any?): String = "${resultValue as Currency}"
 
-    override fun performFiltering(constraint: CharSequence?): FilterResults? {
-      val filterResults = FilterResults()
-      if (constraint == null) return filterResults
-
-      val filtered = currencies
-        .filter {
-          convertResultToString(it)
-            .lowercase()
-            .contains("$constraint".lowercase())
-        }
-      filterResults.values = filtered
-      filterResults.count = filtered.size
-      return filterResults
-    }
+    override fun performFiltering(constraint: CharSequence?): FilterResults? =
+      FilterResults().apply {
+        val filtered = allCurrencies
+          .filter {
+            convertResultToString(it)
+              .contains(constraint ?: "", ignoreCase = true)
+          }
+        values = filtered
+        count = filtered.size
+      }
 
     override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-      try {
-        results ?: return
-        clear()
-
-        val filterList = results.values as List<Currency>
-        filterList.ifEmpty { null } ?: return
-
-        addAll(filterList)
-      } finally {
-        notifyDataSetChanged()
+      val filterList = results?.values
+      if (filterList == null ||
+        filterList !is List<*> ||
+        filterList.isEmpty() ||
+        filterList.first() !is Currency
+      ) {
+        updateData(allCurrencies.toList())
+      } else {
+        @Suppress("UNCHECKED_CAST")
+        updateData(filterList as List<Currency>)
       }
     }
   }
