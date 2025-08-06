@@ -6,17 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
-import androidx.lifecycle.findViewTreeLifecycleOwner
+import android.widget.TextView
 import com.dorrin.domain.model.Currency
-import com.dorrin.presentation.R
-import com.dorrin.presentation.databinding.HolderDropdownCurrencyItemBinding
 
 internal class CurrencyAdapter : ArrayAdapter<Currency> {
   private val allCurrencies: Array<Currency>
   private val currencies: MutableList<Currency>
 
   constructor(context: Context, currencies: List<Currency> = listOf()) :
-      super(context, R.layout.holder_dropdown_currency_item) {
+      super(context, android.R.layout.simple_dropdown_item_1line) {
     this.allCurrencies = arrayOf(*currencies.toTypedArray())
     this.currencies = currencies.toMutableList()
   }
@@ -35,14 +33,15 @@ internal class CurrencyAdapter : ArrayAdapter<Currency> {
 
   private fun createBindingView(position: Int, convertView: View?, parent: ViewGroup): View {
     val inflater = LayoutInflater.from(parent.context)
-    val binding = HolderDropdownCurrencyItemBinding.inflate(inflater, parent, false)
-
+    val view = inflater.inflate(
+      android.R.layout.simple_dropdown_item_1line,
+      parent,
+      false
+    )
     val item = getItem(position)
-    binding.currency = item
-    binding.lifecycleOwner = parent.findViewTreeLifecycleOwner()
-    binding.executePendingBindings()
+    view.findViewById<TextView>(android.R.id.text1).text = item.toString()
 
-    return binding.root
+    return view
   }
 
   fun updateData(newList: List<Currency>) {
