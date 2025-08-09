@@ -7,5 +7,8 @@ import io.reactivex.rxjava3.core.Single
 internal interface DataSource {
   fun getAllCurrencies(): Single<List<CurrencyEntity>>
 
-  fun getExchangeRate(from: CurrencyEntity, to: CurrencyEntity): Single<CurrencyExchangeRateEntity>
+  fun getExchangeRate(
+    fromShortName: String,
+    toShortName: String
+  ): Single<CurrencyExchangeRateEntity>
 }

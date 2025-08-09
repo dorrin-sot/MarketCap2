@@ -4,5 +4,4 @@ data class CurrencyEntity(
   val id: Long,
   val shortName: String,
   val longName: String,
-  val country: CountryEntity,
 )
