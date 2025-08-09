@@ -47,6 +47,8 @@ internal class CurrencyAdapter : ArrayAdapter<Currency> {
   fun updateData(newList: List<Currency>) {
     clear()
     addAll(newList)
+    currencies.clear()
+    currencies.addAll(newList)
     notifyDataSetChanged()
   }
 

@@ -8,4 +8,8 @@ data class Currency(
   override fun toString(): String {
     return "$shortName - $longName"
   }
+
+  companion object {
+    fun empty(): Currency = Currency(0, "empty", "empty")
+  }
 }

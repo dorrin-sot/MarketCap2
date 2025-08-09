@@ -1,5 +1,6 @@
 package com.dorrin.presentation.conversion
 
+import android.annotation.SuppressLint
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,8 +30,8 @@ internal class ConversionViewModel @Inject constructor(
   private var _targetCurrency = MutableLiveData<Currency>()
   private val targetCurrency: LiveData<Currency> get() = _targetCurrency
 
-  private var _conversion = MutableLiveData<CurrencyExchangeRate?>()
-  private val conversion: LiveData<CurrencyExchangeRate?> get() = _conversion
+  private var _conversion = MutableLiveData(CurrencyExchangeRate.empty())
+  private val conversion: LiveData<CurrencyExchangeRate> get() = _conversion
 
   val sourceCurrencyLongName get() = sourceCurrency.map { it.longName }
   val sourceCurrencyShortName get() = sourceCurrency.map { it.shortName }
@@ -38,17 +39,11 @@ internal class ConversionViewModel @Inject constructor(
   val targetCurrencyLongName get() = targetCurrency.map { it.longName }
   val targetCurrencyShortName get() = targetCurrency.map { it.shortName }
 
-  val conversionDisplay = conversion.map {
-    it ?: return@map ""
-    "%d %s = %.2f %s".format(1, it.from.shortName, it.rate, it.to.shortName)
-  }
+  val rate = conversion.map { "%.2f".format(it.rate) }
 
-  val rate = conversion.map { it?.rate.toString() }
+  val conversionDisplayVisibility = conversion.map { if (it.isEmpty()) View.GONE else View.VISIBLE }
 
-  val conversionDisplayVisibility = conversionDisplay.map {
-    if (it.isEmpty()) View.GONE else View.VISIBLE
-  }
-
+  @SuppressLint("CheckResult")
   fun fetchAllCurrencies() {
     getAllCurrenciesUseCase()
       .subscribe {
@@ -68,12 +63,13 @@ internal class ConversionViewModel @Inject constructor(
     performConversion()
   }
 
+  @SuppressLint("CheckResult")
   fun performConversion() {
     val source = sourceCurrency.value
     val target = targetCurrency.value
 
     if (source == null || target == null) {
-      _conversion.value = null
+      _conversion.value = CurrencyExchangeRate.empty()
       return
     }
 
