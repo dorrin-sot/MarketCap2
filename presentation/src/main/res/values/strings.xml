@@ -1,4 +1,5 @@
 <resources>
+    <string name="base_currency">Base Currency</string>
     <string name="target_currency">Target Currency</string>
-    <string name="source_currency">Source Currency</string>
+    <string name="swap_currencies">Swap Currencies</string>
 </resources>

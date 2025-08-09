@@ -13,33 +13,50 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingTop="100dp"
         tools:context=".conversion.ConversionFragment">
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/source_currency"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="5dp">
+            android:layout_marginVertical="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <AutoCompleteTextView
-                android:id="@+id/sourceCurrencySelector"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:hint="@string/source_currency" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_weight="1"
+                android:hint="@string/base_currency">
+
+                <AutoCompleteTextView
+                    android:id="@+id/sourceCurrencySelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/base_currency" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/swapCurrenciesButton"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/swap_currencies"
+                android:src="@drawable/outline_swap_vert_24" />
+        </LinearLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/target_currency"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="5dp">
+            android:hint="@string/target_currency">
 
             <AutoCompleteTextView
                 android:id="@+id/targetCurrencySelector"
@@ -50,11 +67,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|left|center_vertical"
             android:orientation="vertical"
-            android:paddingVertical="30dp"
             android:visibility="@{viewModel.conversionDisplayVisibility}">
 
             <LinearLayout
@@ -80,6 +97,7 @@
                 style="@style/TextAppearance.Material3.DisplaySmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingStart="20dp"
                 android:text="=" />
 
             <LinearLayout

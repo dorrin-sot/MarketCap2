@@ -60,9 +60,9 @@ class ConversionFragment : Fragment() {
     return binding.root
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    viewModel.allCurrencies.observeForever(allCurrenciesObserver)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    viewModel.allCurrencies.observe(viewLifecycleOwner, allCurrenciesObserver)
   }
 
   override fun onStart() {
@@ -70,9 +70,24 @@ class ConversionFragment : Fragment() {
     viewModel.fetchAllCurrencies()
   }
 
-  override fun onDestroy() {
-    super.onDestroy()
-    viewModel.allCurrencies.removeObserver(allCurrenciesObserver)
+  override fun onResume() {
+    super.onResume()
+    binding.swapCurrenciesButton.setOnClickListener {
+      viewModel.swapCurrencies()
+
+      mapOf(
+        viewModel.sourceCurrency to binding.sourceCurrencySelector,
+        viewModel.targetCurrency to binding.targetCurrencySelector,
+      ).forEach { liveData, selector ->
+        liveData.value.let {
+          selector.run {
+            if (it == null) setText("", false)
+            else setText(it.toString(), false)
+            dismissDropDown()
+          }
+        }
+      }
+    }
   }
 
   override fun onDestroyView() {

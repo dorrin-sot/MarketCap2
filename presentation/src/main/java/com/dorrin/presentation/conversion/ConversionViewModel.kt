@@ -14,6 +14,7 @@ import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,22 +25,22 @@ internal class ConversionViewModel @Inject constructor(
   private var _allCurrencies = MutableLiveData<List<Currency>>()
   val allCurrencies: LiveData<List<Currency>> get() = _allCurrencies
 
-  private var _sourceCurrency = MutableLiveData<Currency>()
-  private val sourceCurrency: LiveData<Currency> get() = _sourceCurrency
+  private var _sourceCurrency = MutableLiveData<Currency?>(null)
+  val sourceCurrency: LiveData<Currency?> get() = _sourceCurrency
 
-  private var _targetCurrency = MutableLiveData<Currency>()
-  private val targetCurrency: LiveData<Currency> get() = _targetCurrency
+  private var _targetCurrency = MutableLiveData<Currency?>(null)
+  val targetCurrency: LiveData<Currency?> get() = _targetCurrency
 
   private var _conversion = MutableLiveData(CurrencyExchangeRate.empty())
   private val conversion: LiveData<CurrencyExchangeRate> get() = _conversion
 
-  val sourceCurrencyLongName get() = sourceCurrency.map { it.longName }
-  val sourceCurrencyShortName get() = sourceCurrency.map { it.shortName }
+  val sourceCurrencyLongName get() = sourceCurrency.map { it?.longName }
+  val sourceCurrencyShortName get() = sourceCurrency.map { it?.shortName }
 
-  val targetCurrencyLongName get() = targetCurrency.map { it.longName }
-  val targetCurrencyShortName get() = targetCurrency.map { it.shortName }
+  val targetCurrencyLongName get() = targetCurrency.map { it?.longName }
+  val targetCurrencyShortName get() = targetCurrency.map { it?.shortName }
 
-  val rate = conversion.map { "%.2f".format(it.rate) }
+  val rate = conversion.map { DecimalFormat("#,###.##").format(it.rate) }
 
   val conversionDisplayVisibility = conversion.map { if (it.isEmpty()) View.GONE else View.VISIBLE }
 
@@ -68,10 +69,9 @@ internal class ConversionViewModel @Inject constructor(
     val source = sourceCurrency.value
     val target = targetCurrency.value
 
-    if (source == null || target == null) {
-      _conversion.value = CurrencyExchangeRate.empty()
-      return
-    }
+    _conversion.value = CurrencyExchangeRate.empty()
+
+    if (source == null || target == null) return
 
     currencyExchangeRateUseCase(source, target)
       .subscribe {
@@ -79,5 +79,13 @@ internal class ConversionViewModel @Inject constructor(
           _conversion.value = it
         }
       }
+  }
+
+  fun swapCurrencies() {
+    val source = sourceCurrency.value
+    val target = targetCurrency.value
+    _sourceCurrency.value = target
+    _targetCurrency.value = source
+    performConversion()
   }
 }
