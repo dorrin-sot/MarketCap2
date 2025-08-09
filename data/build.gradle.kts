@@ -46,4 +46,9 @@ dependencies {
 
   implementation(libs.retrofit)
   implementation(libs.converter.gson)
+  implementation(libs.adapter.rxjava3)
+
+  implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.room.rxjava3)
+  ksp(libs.androidx.room.compiler)
 }

@@ -1,8 +1,16 @@
 package com.dorrin.data.entities
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.Index
+
+@Entity(
+  primaryKeys = ["from_id", "to_id"],
+  indices = [Index("from_shortName", "to_shortName")]
+)
 data class CurrencyExchangeRateEntity(
-  val from: CurrencyEntity,
-  val to: CurrencyEntity,
+  @Embedded("from_") val from: CurrencyEntity,
+  @Embedded("to_") val to: CurrencyEntity,
   val rate: Float,
-  val time: DateTimeEntity
+  @Embedded("time_") val time: DateTimeEntity
 )

@@ -1,7 +1,11 @@
 package com.dorrin.data.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class CurrencyEntity(
-  val id: Long,
+  @PrimaryKey val id: Long,
   val shortName: String,
   val longName: String,
 )

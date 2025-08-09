@@ -51,11 +51,7 @@ internal class ConversionViewModel @Inject constructor(
   fun fetchAllCurrencies() {
     viewModelScope.launch {
       getAllCurrenciesUseCase()
-        .retry(3)
-        .blockingGet()
-        .also {
-          _allCurrencies.value = it
-        }
+        .subscribe { _allCurrencies.value }
     }
   }
 
