@@ -11,6 +11,7 @@ import com.dorrin.domain.model.CurrencyExchangeRate
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,10 +50,12 @@ internal class ConversionViewModel @Inject constructor(
   }
 
   fun fetchAllCurrencies() {
-    viewModelScope.launch {
-      getAllCurrenciesUseCase()
-        .subscribe { _allCurrencies.value }
-    }
+    getAllCurrenciesUseCase()
+      .subscribe {
+        viewModelScope.launch(Dispatchers.Main) {
+          _allCurrencies.value = it
+        }
+      }
   }
 
   fun selectSourceCurrency(id: Long) {
@@ -74,11 +77,11 @@ internal class ConversionViewModel @Inject constructor(
       return
     }
 
-    viewModelScope.launch {
-      currencyExchangeRateUseCase(source, target)
-        .retry(3)
-        .blockingGet()
-        .also { _conversion.value = it }
-    }
+    currencyExchangeRateUseCase(source, target)
+      .subscribe {
+        viewModelScope.launch(Dispatchers.Main) {
+          _conversion.value = it
+        }
+      }
   }
 }

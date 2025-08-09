@@ -20,13 +20,13 @@ internal class AllCurrenciesRepositoryImpl @Inject constructor(
       // 1) Emit current local snapshot immediately
       localDataSource.getAllCurrencies()
         .subscribeOn(Schedulers.io())
-        .map { it.also { Log.d("AllCurrenciesRepository", "1. Local results: $it") } }
+        .map { it.also { Log.d(TAG, "1. Local results: $it") } }
         .toObservable(),
 
       // 2) Fetch remote, save, then re-query local and emit again
       remoteDataSource.getAllCurrencies()
         .subscribeOn(Schedulers.io())
-        .map { it.also { Log.d("AllCurrenciesRepository", "2. Remote results: $it") } }
+        .map { it.also { Log.d(TAG, "2. Remote results: $it") } }
         .flatMapObservable { remote ->
           // wrap non-Rx insert into a Completable so we stay non-blocking
           Completable.fromAction {
@@ -35,7 +35,7 @@ internal class AllCurrenciesRepositoryImpl @Inject constructor(
             .andThen(
               localDataSource.getAllCurrencies()
                 .subscribeOn(Schedulers.io())
-                .map { it.also { Log.d("AllCurrenciesRepository", "3. Local results: $it") } }
+                .map { it.also { Log.d(TAG, "3. Local results: $it") } }
                 .toObservable()
             )
         }
@@ -44,4 +44,8 @@ internal class AllCurrenciesRepositoryImpl @Inject constructor(
     )
       .map { list -> list.map { it.toCurrency() } }
       .distinctUntilChanged()
+
+  private companion object {
+    const val TAG = "AllCurrenciesRepository"
+  }
 }

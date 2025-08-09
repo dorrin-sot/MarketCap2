@@ -13,4 +13,15 @@ data class CurrencyExchangeRateEntity(
   @Embedded("to_") val to: CurrencyEntity,
   val rate: Float,
   @Embedded("time_") val time: DateTimeEntity
-)
+) {
+  companion object {
+    internal fun empty(): CurrencyExchangeRateEntity {
+      return CurrencyExchangeRateEntity(
+        CurrencyEntity.empty(),
+        CurrencyEntity.empty(),
+        0f,
+        DateTimeEntity.empty(),
+      )
+    }
+  }
+}
