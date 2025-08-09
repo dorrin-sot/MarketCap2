@@ -41,6 +41,9 @@ internal class ConversionViewModel @Inject constructor(
     it ?: return@map ""
     "%d %s = %.2f %s".format(1, it.from.shortName, it.rate, it.to.shortName)
   }
+
+  val rate = conversion.map { it?.rate.toString() }
+
   val conversionDisplayVisibility = conversionDisplay.map {
     if (it.isEmpty()) View.GONE else View.VISIBLE
   }
