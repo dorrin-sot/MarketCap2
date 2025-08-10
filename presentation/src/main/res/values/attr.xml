@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="ConversionView">
+        <attr name="android:visibility" />
+        <attr name="sourceShortName" format="string" />
+        <attr name="targetShortName" format="string" />
+        <attr name="rate" format="string" />
+    </declare-styleable>
+</resources>
