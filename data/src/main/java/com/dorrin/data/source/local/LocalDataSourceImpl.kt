@@ -1,4 +1,4 @@
-package com.dorrin.data.source
+package com.dorrin.data.source.local
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import com.dorrin.data.model.CurrencyModel
 import com.dorrin.data.model.CurrencyExchangeRateModel
+import com.dorrin.data.source.DataSource
 import io.reactivex.rxjava3.core.Single
 
 @Dao

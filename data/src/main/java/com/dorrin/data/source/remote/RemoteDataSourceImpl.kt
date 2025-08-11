@@ -1,7 +1,8 @@
-package com.dorrin.data.source
+package com.dorrin.data.source.remote
 
-import com.dorrin.data.model.CurrencyModel
 import com.dorrin.data.model.CurrencyExchangeRateModel
+import com.dorrin.data.model.CurrencyModel
+import com.dorrin.data.source.DataSource
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,6 +14,6 @@ internal interface RemoteDataSourceImpl : DataSource {
   @GET("/convert")
   override fun getExchangeRate(
     @Query("from") fromShortName: String,
-    @Query("to") toShortName: String
+    @Query("to") toShortName: String,
   ): Single<CurrencyExchangeRateModel>
 }

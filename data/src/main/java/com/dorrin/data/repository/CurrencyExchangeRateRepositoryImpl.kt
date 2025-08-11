@@ -3,8 +3,8 @@ package com.dorrin.data.repository
 import android.util.Log
 import com.dorrin.data.model.CurrencyExchangeRateModel
 import com.dorrin.data.model.mappers.toCurrencyExchangeRateEntity
-import com.dorrin.data.source.LocalDataSourceImpl
-import com.dorrin.data.source.RemoteDataSourceImpl
+import com.dorrin.data.source.local.LocalDataSourceImpl
+import com.dorrin.data.source.remote.RemoteDataSourceImpl
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import com.dorrin.domain.repository.CurrencyExchangeRateRepository

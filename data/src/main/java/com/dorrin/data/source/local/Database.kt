@@ -1,9 +1,9 @@
-package com.dorrin.data.source
+package com.dorrin.data.source.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.dorrin.data.model.CurrencyModel
 import com.dorrin.data.model.CurrencyExchangeRateModel
+import com.dorrin.data.model.CurrencyModel
 
 @Database(
   entities = [CurrencyModel::class, CurrencyExchangeRateModel::class],
