@@ -37,7 +37,7 @@ android {
 
 dependencies {
   implementation(project(":domain"))
-  implementation(project(":data")) // TODO remove later
+  implementation(project(":data"))
   implementation(libs.rxkotlin)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
