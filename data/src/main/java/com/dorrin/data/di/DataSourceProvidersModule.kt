@@ -3,8 +3,8 @@ package com.dorrin.data.di
 import android.content.Context
 import androidx.room.Room
 import com.dorrin.data.source.Database
-import com.dorrin.data.source.LocalDataSource
-import com.dorrin.data.source.RemoteDataSource
+import com.dorrin.data.source.LocalDataSourceImpl
+import com.dorrin.data.source.RemoteDataSourceImpl
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -36,8 +36,8 @@ internal class DataSourceProvidersModule {
       .build()
 
   @Provides
-  internal fun providesRemoteDataSource(retrofit: Retrofit): RemoteDataSource =
-    retrofit.create(RemoteDataSource::class.java)
+  internal fun providesRemoteDataSource(retrofit: Retrofit): RemoteDataSourceImpl =
+    retrofit.create(RemoteDataSourceImpl::class.java)
 
 
   @Singleton
@@ -48,7 +48,7 @@ internal class DataSourceProvidersModule {
 
   @Singleton
   @Provides
-  internal fun providesLocalDataSource(database: Database): LocalDataSource =
+  internal fun providesLocalDataSource(database: Database): LocalDataSourceImpl =
     database.localDataSource()
 
   companion object {

@@ -2,8 +2,8 @@ package com.dorrin.data.repository
 
 import android.util.Log
 import com.dorrin.data.model.mappers.toCurrencyEntity
-import com.dorrin.data.source.LocalDataSource
-import com.dorrin.data.source.RemoteDataSource
+import com.dorrin.data.source.LocalDataSourceImpl
+import com.dorrin.data.source.RemoteDataSourceImpl
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.repository.AllCurrenciesRepository
 import io.reactivex.rxjava3.core.Completable
@@ -12,28 +12,28 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 internal class AllCurrenciesRepositoryImpl @Inject constructor(
-  private val remoteDataSource: RemoteDataSource,
-  private val localDataSource: LocalDataSource,
+  private val remoteDataSourceImpl: RemoteDataSourceImpl,
+  private val localDataSourceImpl: LocalDataSourceImpl,
 ) : AllCurrenciesRepository {
   override fun fetchAllCurrencies(): Observable<List<CurrencyEntity>> =
     Observable.concat(
       // 1) Emit current local snapshot immediately
-      localDataSource.getAllCurrencies()
+      localDataSourceImpl.getAllCurrencies()
         .subscribeOn(Schedulers.io())
         .map { it.also { Log.d(TAG, "1. Local results: $it") } }
         .toObservable(),
 
       // 2) Fetch remote, save, then re-query local and emit again
-      remoteDataSource.getAllCurrencies()
+      remoteDataSourceImpl.getAllCurrencies()
         .subscribeOn(Schedulers.io())
         .map { it.also { Log.d(TAG, "2. Remote results: $it") } }
         .flatMapObservable { remote ->
           // wrap non-Rx insert into a Completable so we stay non-blocking
           Completable.fromAction {
-            localDataSource.insertAllCurrencies(*remote.toTypedArray())
+            localDataSourceImpl.insertAllCurrencies(*remote.toTypedArray())
           }
             .andThen(
-              localDataSource.getAllCurrencies()
+              localDataSourceImpl.getAllCurrencies()
                 .subscribeOn(Schedulers.io())
                 .map { it.also { Log.d(TAG, "3. Local results: $it") } }
                 .toObservable()

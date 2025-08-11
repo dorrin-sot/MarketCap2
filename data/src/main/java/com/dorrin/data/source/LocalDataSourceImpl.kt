@@ -9,7 +9,7 @@ import com.dorrin.data.model.CurrencyExchangeRateModel
 import io.reactivex.rxjava3.core.Single
 
 @Dao
-internal interface LocalDataSource : DataSource {
+internal interface LocalDataSourceImpl : DataSource {
   @Query("select * from CurrencyModel")
   override fun getAllCurrencies(): Single<List<CurrencyModel>>
 

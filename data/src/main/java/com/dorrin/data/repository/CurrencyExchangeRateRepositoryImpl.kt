@@ -3,8 +3,8 @@ package com.dorrin.data.repository
 import android.util.Log
 import com.dorrin.data.model.CurrencyExchangeRateModel
 import com.dorrin.data.model.mappers.toCurrencyExchangeRateEntity
-import com.dorrin.data.source.LocalDataSource
-import com.dorrin.data.source.RemoteDataSource
+import com.dorrin.data.source.LocalDataSourceImpl
+import com.dorrin.data.source.RemoteDataSourceImpl
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import com.dorrin.domain.repository.CurrencyExchangeRateRepository
@@ -14,8 +14,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 internal class CurrencyExchangeRateRepositoryImpl @Inject constructor(
-  private val remoteDataSource: RemoteDataSource,
-  private val localDataSource: LocalDataSource,
+  private val remoteDataSourceImpl: RemoteDataSourceImpl,
+  private val localDataSourceImpl: LocalDataSourceImpl,
 ) : CurrencyExchangeRateRepository {
   override fun fetchExchangeRate(
     from: CurrencyEntity,
@@ -26,23 +26,23 @@ internal class CurrencyExchangeRateRepositoryImpl @Inject constructor(
 
     return Observable.concat(
       // 1) Emit current local snapshot immediately
-      localDataSource.getExchangeRate(fromShortName, toShortName)
+      localDataSourceImpl.getExchangeRate(fromShortName, toShortName)
         .subscribeOn(Schedulers.io())
         .onErrorReturn { CurrencyExchangeRateModel.empty() }
         .map { it.also { Log.d(TAG, "1. Local results: $it") } }
         .toObservable(),
 
       // 2) Fetch remote, save, then re-query local and emit again
-      remoteDataSource.getExchangeRate(fromShortName, toShortName)
+      remoteDataSourceImpl.getExchangeRate(fromShortName, toShortName)
         .subscribeOn(Schedulers.io())
         .map { it.also { Log.d(TAG, "2. Remote results: $it") } }
         .flatMapObservable { remote ->
           // wrap non-Rx insert into a Completable so we stay non-blocking
           Completable.fromAction {
-            localDataSource.insertExchangeRate(remote)
+            localDataSourceImpl.insertExchangeRate(remote)
           }
             .andThen(
-              localDataSource.getExchangeRate(fromShortName, toShortName)
+              localDataSourceImpl.getExchangeRate(fromShortName, toShortName)
                 .onErrorReturn { CurrencyExchangeRateModel.empty() }
                 .subscribeOn(Schedulers.io())
                 .map { it.also { Log.d(TAG, "3. Local results: $it") } }

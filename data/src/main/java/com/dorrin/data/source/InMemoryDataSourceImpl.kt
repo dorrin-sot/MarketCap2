@@ -6,7 +6,7 @@ import com.dorrin.data.model.DateTimeModel
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
-internal class InMemoryDataSource @Inject constructor() : DataSource {
+internal class InMemoryDataSourceImpl @Inject constructor() : DataSource {
   private val allCurrencies = listOf(
     CurrencyModel(0, "USD", "United States Dollars"),
     CurrencyModel(1, "EUR", "Euro"),

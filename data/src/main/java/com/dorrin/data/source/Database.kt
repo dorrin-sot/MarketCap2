@@ -10,5 +10,5 @@ import com.dorrin.data.model.CurrencyExchangeRateModel
   version = 1
 )
 internal abstract class Database : RoomDatabase() {
-  abstract fun localDataSource(): LocalDataSource
+  abstract fun localDataSource(): LocalDataSourceImpl
 }
