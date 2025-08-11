@@ -1,18 +1,16 @@
 package com.dorrin.presentation.conversion
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -37,18 +35,18 @@ internal class ConversionViewModel @Inject constructor(
   val targetCurrencyShortName get() = targetCurrency.map { it?.shortName }
   val rate = conversion.map { DecimalFormat("#,###.##").format(it.rate) }
 
+  private var getAllCurrenciesObs: Disposable? = null
+  private var currencyExchangeRateObs: Disposable? = null
+
   init {
     fetchAllCurrencies()
   }
 
-  @SuppressLint("CheckResult")
   private fun fetchAllCurrencies() {
-    getAllCurrenciesUseCase() // todo dispose of observable in viewModel::onCleared
-      .subscribe { // todo rxjava gives ability to observe or subscribe on main thread so no need for launch {}
-        viewModelScope.launch(Dispatchers.Main) {
-          _allCurrencies.value = it
-        }
-      }
+    getAllCurrenciesObs?.dispose()
+    getAllCurrenciesObs = getAllCurrenciesUseCase()
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe { _allCurrencies.value = it }
   }
 
   fun selectSourceCurrency(id: Long) {
@@ -61,7 +59,6 @@ internal class ConversionViewModel @Inject constructor(
     performConversion()
   }
 
-  @SuppressLint("CheckResult")
   fun performConversion() {
     val source = sourceCurrency.value
     val target = targetCurrency.value
@@ -70,12 +67,10 @@ internal class ConversionViewModel @Inject constructor(
 
     if (source == null || target == null) return
 
-    currencyExchangeRateUseCase(source, target)
-      .subscribe {
-        viewModelScope.launch(Dispatchers.Main) {
-          _conversion.value = it
-        }
-      }
+    currencyExchangeRateObs?.dispose()
+    currencyExchangeRateObs = currencyExchangeRateUseCase(source, target)
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe { _conversion.value = it }
   }
 
   fun swapCurrencies() {
@@ -84,5 +79,11 @@ internal class ConversionViewModel @Inject constructor(
     _sourceCurrency.value = target
     _targetCurrency.value = source
     performConversion()
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    getAllCurrenciesObs?.dispose()
+    currencyExchangeRateObs?.dispose()
   }
 }

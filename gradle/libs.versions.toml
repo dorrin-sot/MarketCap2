@@ -17,6 +17,7 @@ ksp = "2.2.0-2.0.2"
 retrofit = "3.0.0"
 room = "2.7.2"
 adapterRxjava3 = "3.0.0"
+rxandroid = "3.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ve
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 adapter-rxjava3 = { group = "com.squareup.retrofit2", name = "adapter-rxjava3", version.ref = "retrofit" }
+rxandroid = { group = "io.reactivex.rxjava3", name = "rxandroid", version.ref = "rxkotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
