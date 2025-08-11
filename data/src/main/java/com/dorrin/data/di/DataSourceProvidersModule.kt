@@ -44,6 +44,7 @@ internal class DataSourceProvidersModule {
   @Provides
   internal fun providesDatabase(@ApplicationContext applicationContext: Context): Database =
     Room.databaseBuilder(applicationContext, Database::class.java, DB_NAME)
+      .fallbackToDestructiveMigration(true)
       .build()
 
   @Singleton

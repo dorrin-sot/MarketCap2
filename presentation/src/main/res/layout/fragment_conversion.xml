@@ -17,7 +17,6 @@
         android:layout_marginHorizontal="20dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingTop="100dp"
         tools:context=".conversion.ConversionFragment">
 
         <LinearLayout
