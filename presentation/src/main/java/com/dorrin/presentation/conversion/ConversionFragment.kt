@@ -63,6 +63,8 @@ class ConversionFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     viewModel.allCurrencies.observe(viewLifecycleOwner, allCurrenciesObserver)
+
+    binding.swapCurrenciesButton.setOnClickListener(SwapCurrenciesButtonOnClickListener())
   }
 
   override fun onStart() {
@@ -70,10 +72,24 @@ class ConversionFragment : Fragment() {
     viewModel.fetchAllCurrencies() // todo move to viewModel::init
   }
 
-  override fun onResume() {
-    super.onResume()
-    // todo move to oncreate
-    binding.swapCurrenciesButton.setOnClickListener {
+  override fun onDestroyView() {
+    super.onDestroyView()
+    _binding?.unbind()
+    _binding = null
+  }
+
+  private inner class SourceOnItemSelectedListener : AdapterView.OnItemClickListener {
+    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
+      viewModel.selectSourceCurrency(id)
+  }
+
+  private inner class TargetOnItemSelectedListener : AdapterView.OnItemClickListener {
+    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
+      viewModel.selectTargetCurrency(id)
+  }
+
+  private inner class SwapCurrenciesButtonOnClickListener : View.OnClickListener {
+    override fun onClick(v: View?) {
       viewModel.swapCurrencies()
 
       mapOf(
@@ -89,22 +105,6 @@ class ConversionFragment : Fragment() {
         }
       }
     }
-  }
-
-  override fun onDestroyView() {
-    super.onDestroyView()
-    _binding?.unbind()
-    _binding = null
-  }
-
-  inner class SourceOnItemSelectedListener : AdapterView.OnItemClickListener {
-    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
-      viewModel.selectSourceCurrency(id)
-  }
-
-  inner class TargetOnItemSelectedListener : AdapterView.OnItemClickListener {
-    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
-      viewModel.selectTargetCurrency(id)
   }
 
   companion object {
