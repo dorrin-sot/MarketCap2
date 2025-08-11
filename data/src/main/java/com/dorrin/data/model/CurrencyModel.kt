@@ -1,15 +1,15 @@
-package com.dorrin.data.entities
+package com.dorrin.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class CurrencyEntity(
+data class CurrencyModel(
   @PrimaryKey val id: Long,
   val shortName: String,
   val longName: String,
 ) {
   companion object {
-    internal fun empty(): CurrencyEntity = CurrencyEntity(0, "empty", "empty")
+    internal fun empty(): CurrencyModel = CurrencyModel(0, "empty", "empty")
   }
 }

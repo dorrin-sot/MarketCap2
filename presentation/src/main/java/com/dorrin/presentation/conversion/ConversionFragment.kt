@@ -11,7 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.dorrin.domain.model.Currency
+import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.presentation.R
 import com.dorrin.presentation.databinding.FragmentConversionBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,9 +23,9 @@ class ConversionFragment : Fragment() {
 
   private val viewModel by viewModels<ConversionViewModel>()
 
-  val allCurrenciesObserver = object : Observer<List<Currency>> {
+  val allCurrenciesObserver = object : Observer<List<CurrencyEntity>> {
     @RequiresApi(Build.VERSION_CODES.Q)
-    override fun onChanged(value: List<Currency>) =
+    override fun onChanged(value: List<CurrencyEntity>) =
       arrayOf(
         _binding?.sourceCurrencySelector,
         _binding?.targetCurrencySelector
@@ -46,7 +46,7 @@ class ConversionFragment : Fragment() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?
+    savedInstanceState: Bundle?,
   ): View? {
     _binding = FragmentConversionBinding.inflate(
       inflater,

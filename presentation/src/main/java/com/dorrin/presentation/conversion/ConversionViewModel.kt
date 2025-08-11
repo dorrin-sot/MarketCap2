@@ -7,12 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.dorrin.domain.model.Currency
-import com.dorrin.domain.model.CurrencyExchangeRate
+import com.dorrin.domain.entity.CurrencyEntity
+import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -23,17 +22,17 @@ internal class ConversionViewModel @Inject constructor(
   private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase,
   private val currencyExchangeRateUseCase: GetCurrencyExchangeRateUseCase,
 ) : ViewModel() {
-  private var _allCurrencies = MutableLiveData<List<Currency>>()
-  val allCurrencies: LiveData<List<Currency>> get() = _allCurrencies
+  private var _allCurrencies = MutableLiveData<List<CurrencyEntity>>()
+  val allCurrencies: LiveData<List<CurrencyEntity>> get() = _allCurrencies
 
-  private var _sourceCurrency = MutableLiveData<Currency?>(null)
-  val sourceCurrency: LiveData<Currency?> get() = _sourceCurrency
+  private var _sourceCurrency = MutableLiveData<CurrencyEntity?>(null)
+  val sourceCurrency: LiveData<CurrencyEntity?> get() = _sourceCurrency
 
-  private var _targetCurrency = MutableLiveData<Currency?>(null)
-  val targetCurrency: LiveData<Currency?> get() = _targetCurrency
+  private var _targetCurrency = MutableLiveData<CurrencyEntity?>(null)
+  val targetCurrency: LiveData<CurrencyEntity?> get() = _targetCurrency
 
-  private var _conversion = MutableLiveData(CurrencyExchangeRate.empty())
-  private val conversion: LiveData<CurrencyExchangeRate> get() = _conversion
+  private var _conversion = MutableLiveData(CurrencyExchangeRateEntity.empty())
+  private val conversion: LiveData<CurrencyExchangeRateEntity> get() = _conversion
 
   val sourceCurrencyLongName get() = sourceCurrency.map { it?.longName }
   val sourceCurrencyShortName get() = sourceCurrency.map { it?.shortName }
@@ -45,6 +44,7 @@ internal class ConversionViewModel @Inject constructor(
 
   val conversionDisplayVisibility = conversion.map { if (it.isEmpty()) View.GONE else View.VISIBLE }
 
+  @SuppressLint("CheckResult")
   fun fetchAllCurrencies() {
     getAllCurrenciesUseCase() // todo dispose of observable in viewModel::onCleared
       .subscribe { // todo rxjava gives ability to observe or subscribe on main thread so no need for launch {}
@@ -69,7 +69,7 @@ internal class ConversionViewModel @Inject constructor(
     val source = sourceCurrency.value
     val target = targetCurrency.value
 
-    _conversion.value = CurrencyExchangeRate.empty()
+    _conversion.value = CurrencyExchangeRateEntity.empty()
 
     if (source == null || target == null) return
 

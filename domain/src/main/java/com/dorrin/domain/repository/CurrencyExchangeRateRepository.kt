@@ -1,10 +1,12 @@
 package com.dorrin.domain.repository
 
-import com.dorrin.domain.model.Currency
-import com.dorrin.domain.model.CurrencyExchangeRate
+import com.dorrin.domain.entity.CurrencyEntity
+import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
 
 interface CurrencyExchangeRateRepository {
-  fun fetchExchangeRate(from: Currency, to: Currency): Observable<CurrencyExchangeRate>
+  fun fetchExchangeRate(
+    from: CurrencyEntity,
+    to: CurrencyEntity,
+  ): Observable<CurrencyExchangeRateEntity>
 }

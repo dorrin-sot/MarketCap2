@@ -4,17 +4,17 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import com.dorrin.data.entities.CurrencyEntity
-import com.dorrin.data.entities.CurrencyExchangeRateEntity
+import com.dorrin.data.model.CurrencyModel
+import com.dorrin.data.model.CurrencyExchangeRateModel
 import io.reactivex.rxjava3.core.Single
 
 @Dao
 internal interface LocalDataSource : DataSource {
-  @Query("select * from currencyentity")
-  override fun getAllCurrencies(): Single<List<CurrencyEntity>>
+  @Query("select * from CurrencyModel")
+  override fun getAllCurrencies(): Single<List<CurrencyModel>>
 
   @Query(
-    "select * from currencyexchangerateentity " +
+    "select * from CurrencyExchangeRateModel " +
         "where from_shortName = :fromShortName and " +
         "to_shortName = :toShortName " +
         "limit 1"
@@ -22,11 +22,11 @@ internal interface LocalDataSource : DataSource {
   override fun getExchangeRate(
     fromShortName: String,
     toShortName: String
-  ): Single<CurrencyExchangeRateEntity>
+  ): Single<CurrencyExchangeRateModel>
 
   @Insert(onConflict = REPLACE)
-  fun insertAllCurrencies(vararg currency: CurrencyEntity)
+  fun insertAllCurrencies(vararg currency: CurrencyModel)
 
   @Insert(onConflict = REPLACE)
-  fun insertExchangeRate(currencyExchangeRateEntity: CurrencyExchangeRateEntity)
+  fun insertExchangeRate(currencyExchangeRateEntity: CurrencyExchangeRateModel)
 }

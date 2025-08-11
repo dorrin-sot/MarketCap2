@@ -1,12 +1,12 @@
-package com.dorrin.domain.model
+package com.dorrin.data.model
 
-data class DateTime(
+data class DateTimeModel(
   val year: Int,
   val month: Int = 1,
   val day: Int = 1,
   val hour: Int = 0
 ) {
   companion object {
-    fun empty(): DateTime = DateTime(0)
+    fun empty(): DateTimeModel = DateTimeModel(0)
   }
 }

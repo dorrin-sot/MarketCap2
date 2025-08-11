@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.TextView
-import com.dorrin.domain.model.Currency
+import com.dorrin.domain.entity.CurrencyEntity
 
-internal class CurrencyAdapter : ArrayAdapter<Currency> {
-  private val allCurrencies: Array<Currency>
-  private val currencies: MutableList<Currency>
+internal class CurrencyAdapter : ArrayAdapter<CurrencyEntity> {
+  private val allCurrencies: Array<CurrencyEntity>
+  private val currencies: MutableList<CurrencyEntity>
 
-  constructor(context: Context, currencies: List<Currency> = listOf()) :
+  constructor(context: Context, currencies: List<CurrencyEntity> = listOf()) :
       super(context, android.R.layout.simple_dropdown_item_1line) {
     this.allCurrencies = arrayOf(*currencies.toTypedArray())
     this.currencies = currencies.toMutableList()
@@ -21,7 +21,7 @@ internal class CurrencyAdapter : ArrayAdapter<Currency> {
 
   private val _filter = CurrenciesFilter()
 
-  override fun getItem(position: Int): Currency = currencies[position]
+  override fun getItem(position: Int): CurrencyEntity = currencies[position]
 
   override fun getItemId(position: Int): Long = getItem(position).id
 
@@ -44,7 +44,7 @@ internal class CurrencyAdapter : ArrayAdapter<Currency> {
     return view
   }
 
-  fun updateData(newList: List<Currency>) {
+  fun updateData(newList: List<CurrencyEntity>) {
     clear()
     addAll(newList)
     currencies.clear()
@@ -55,7 +55,8 @@ internal class CurrencyAdapter : ArrayAdapter<Currency> {
   override fun getFilter(): Filter = _filter
 
   private inner class CurrenciesFilter() : Filter() {
-    override fun convertResultToString(resultValue: Any?): String = "${resultValue as Currency}"
+    override fun convertResultToString(resultValue: Any?): String =
+      "${resultValue as CurrencyEntity}"
 
     override fun performFiltering(constraint: CharSequence?): FilterResults? =
       FilterResults().apply {
@@ -73,12 +74,12 @@ internal class CurrencyAdapter : ArrayAdapter<Currency> {
       if (filterList == null ||
         filterList !is List<*> ||
         filterList.isEmpty() ||
-        filterList.first() !is Currency
+        filterList.first() !is CurrencyEntity
       ) {
         updateData(allCurrencies.toList())
       } else {
         @Suppress("UNCHECKED_CAST")
-        updateData(filterList as List<Currency>)
+        updateData(filterList as List<CurrencyEntity>)
       }
     }
   }

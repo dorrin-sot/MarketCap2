@@ -1,4 +1,4 @@
-package com.dorrin.data.entities
+package com.dorrin.domain.entity
 
 data class DateTimeEntity(
   val year: Int,
