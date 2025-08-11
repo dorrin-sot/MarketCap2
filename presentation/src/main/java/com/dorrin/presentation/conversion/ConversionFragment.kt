@@ -67,11 +67,12 @@ class ConversionFragment : Fragment() {
 
   override fun onStart() {
     super.onStart()
-    viewModel.fetchAllCurrencies()
+    viewModel.fetchAllCurrencies() // todo move to viewModel::init
   }
 
   override fun onResume() {
     super.onResume()
+    // todo move to oncreate
     binding.swapCurrenciesButton.setOnClickListener {
       viewModel.swapCurrencies()
 

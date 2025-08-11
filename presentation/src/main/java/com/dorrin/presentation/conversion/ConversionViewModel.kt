@@ -12,6 +12,7 @@ import com.dorrin.domain.model.CurrencyExchangeRate
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -44,10 +45,9 @@ internal class ConversionViewModel @Inject constructor(
 
   val conversionDisplayVisibility = conversion.map { if (it.isEmpty()) View.GONE else View.VISIBLE }
 
-  @SuppressLint("CheckResult")
   fun fetchAllCurrencies() {
-    getAllCurrenciesUseCase()
-      .subscribe {
+    getAllCurrenciesUseCase() // todo dispose of observable in viewModel::onCleared
+      .subscribe { // todo rxjava gives ability to observe or subscribe on main thread so no need for launch {}
         viewModelScope.launch(Dispatchers.Main) {
           _allCurrencies.value = it
         }
