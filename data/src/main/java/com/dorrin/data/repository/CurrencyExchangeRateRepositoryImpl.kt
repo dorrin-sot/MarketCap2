@@ -11,11 +11,10 @@ import com.dorrin.domain.repository.CurrencyExchangeRateRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 
-internal class CurrencyExchangeRateRepositoryImpl @Inject constructor(
-  private val remoteDataSourceImpl: RemoteDataSourceImpl,
-  private val localDataSourceImpl: LocalDataSourceImpl,
+class CurrencyExchangeRateRepositoryImpl(
+  val remoteDataSourceImpl: RemoteDataSourceImpl,
+  val localDataSourceImpl: LocalDataSourceImpl,
 ) : CurrencyExchangeRateRepository {
   override fun fetchExchangeRate(
     from: CurrencyEntity,

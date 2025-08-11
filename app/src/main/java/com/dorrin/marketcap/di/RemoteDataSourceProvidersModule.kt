@@ -1,4 +1,4 @@
-package com.dorrin.data.di
+package com.dorrin.marketcap.di
 
 import com.dorrin.data.source.remote.RemoteDataSourceImpl
 import com.google.gson.FieldNamingPolicy

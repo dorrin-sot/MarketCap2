@@ -9,11 +9,10 @@ import com.dorrin.domain.repository.AllCurrenciesRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import javax.inject.Inject
 
-internal class AllCurrenciesRepositoryImpl @Inject constructor(
-  private val remoteDataSourceImpl: RemoteDataSourceImpl,
-  private val localDataSourceImpl: LocalDataSourceImpl,
+class AllCurrenciesRepositoryImpl(
+  val remoteDataSourceImpl: RemoteDataSourceImpl,
+  val localDataSourceImpl: LocalDataSourceImpl,
 ) : AllCurrenciesRepository {
   override fun fetchAllCurrencies(): Observable<List<CurrencyEntity>> =
     Observable.concat(

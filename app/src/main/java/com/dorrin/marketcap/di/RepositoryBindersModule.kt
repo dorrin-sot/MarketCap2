@@ -1,4 +1,4 @@
-package com.dorrin.data.di
+package com.dorrin.marketcap.di
 
 import com.dorrin.data.repository.AllCurrenciesRepositoryImpl
 import com.dorrin.data.repository.CurrencyExchangeRateRepositoryImpl

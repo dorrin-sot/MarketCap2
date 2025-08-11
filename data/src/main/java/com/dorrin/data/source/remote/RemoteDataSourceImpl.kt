@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-internal interface RemoteDataSourceImpl : DataSource {
+interface RemoteDataSourceImpl : DataSource {
   @GET("/all-currencies")
   override fun getAllCurrencies(): Single<List<CurrencyModel>>
 

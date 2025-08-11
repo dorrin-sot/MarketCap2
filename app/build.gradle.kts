@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+  implementation(project(":domain"))
+  implementation(project(":data"))
   implementation(project(":presentation"))
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)
@@ -49,4 +51,12 @@ dependencies {
 
   implementation(libs.hilt.android)
   ksp(libs.hilt.compiler)
+
+  implementation(libs.retrofit)
+  implementation(libs.converter.gson)
+  implementation(libs.adapter.rxjava3)
+
+  implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.room.rxjava3)
+  ksp(libs.androidx.room.compiler)
 }
