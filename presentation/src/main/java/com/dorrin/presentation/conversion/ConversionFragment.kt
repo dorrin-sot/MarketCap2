@@ -44,11 +44,6 @@ class ConversionFragment : Fragment() {
     binding.swapCurrenciesButton.setOnClickListener(SwapCurrenciesButtonOnClickListener())
   }
 
-  override fun onStart() {
-    super.onStart()
-    viewModel.fetchAllCurrencies() // todo move to viewModel::init
-  }
-
   override fun onDestroyView() {
     super.onDestroyView()
     _binding?.unbind()

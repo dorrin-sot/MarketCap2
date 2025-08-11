@@ -1,7 +1,6 @@
 package com.dorrin.presentation.conversion
 
 import android.annotation.SuppressLint
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,18 +33,16 @@ internal class ConversionViewModel @Inject constructor(
   private var _conversion = MutableLiveData(CurrencyExchangeRateEntity.empty())
   private val conversion: LiveData<CurrencyExchangeRateEntity> get() = _conversion
 
-  val sourceCurrencyLongName get() = sourceCurrency.map { it?.longName }
   val sourceCurrencyShortName get() = sourceCurrency.map { it?.shortName }
-
-  val targetCurrencyLongName get() = targetCurrency.map { it?.longName }
   val targetCurrencyShortName get() = targetCurrency.map { it?.shortName }
-
   val rate = conversion.map { DecimalFormat("#,###.##").format(it.rate) }
 
-  val conversionDisplayVisibility = conversion.map { if (it.isEmpty()) View.GONE else View.VISIBLE }
+  init {
+    fetchAllCurrencies()
+  }
 
   @SuppressLint("CheckResult")
-  fun fetchAllCurrencies() {
+  private fun fetchAllCurrencies() {
     getAllCurrenciesUseCase() // todo dispose of observable in viewModel::onCleared
       .subscribe { // todo rxjava gives ability to observe or subscribe on main thread so no need for launch {}
         viewModelScope.launch(Dispatchers.Main) {
