@@ -6,4 +6,11 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.jvm) apply false
   alias(libs.plugins.hilt.android) apply false
   alias(libs.plugins.devtools.ksp) apply false
+  alias(libs.plugins.navigation.safeargs) apply false
+}
+
+buildscript {
+  dependencies {
+    classpath(libs.androidx.navigation.safe.args.gradle)
+  }
 }

@@ -24,12 +24,15 @@ class ConversionFragment : Fragment() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    arguments?.let { arguments ->
-      val fromId = arguments.getLong(getString(R.string.fromid_nav_arg))
-      val fromShortName = arguments.getString(getString(R.string.fromshortname_nav_arg))!!
-      val fromLongName = arguments.getString(getString(R.string.fromlongname_nav_arg))!!
-
-      viewModel.selectSourceCurrency(CurrencyEntity(fromId, fromShortName, fromLongName))
+    arguments?.let {
+      val args = ConversionFragmentArgs.fromBundle(it)
+      viewModel.selectSourceCurrency(
+        CurrencyEntity(
+          args.fromId,
+          args.fromShortName,
+          args.fromLongName
+        )
+      )
     }
   }
 

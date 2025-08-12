@@ -4,11 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.dorrin.domain.entity.CurrencyEntity
-import com.dorrin.presentation.R
 
 internal class CurrencyListAdapter(
   private val allCurrencies: Array<CurrencyEntity>,
@@ -51,16 +49,13 @@ internal class CurrencyListAdapter(
       override fun onClick(v: View?) {
         val currency = tag
 
-        v?.findNavController()?.navigate(
-          R.id.action_navigation_list_to_navigation_conversion,
-          v.context?.let { context ->
-            bundleOf(
-              context.getString(R.string.fromid_nav_arg) to currency.id,
-              context.getString(R.string.fromshortname_nav_arg) to currency.shortName,
-              context.getString(R.string.fromlongname_nav_arg) to currency.longName,
-            )
+        val action = CurrencyListFragmentDirections.actionNavigationListToNavigationConversion()
+          .apply {
+            fromId = currency.id
+            fromShortName = currency.shortName
+            fromLongName = currency.longName
           }
-        )
+        v?.findNavController()?.navigate(action)
       }
     }
   }

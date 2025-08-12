@@ -11,15 +11,15 @@
         android:label="@string/title_conversion"
         tools:layout="@layout/fragment_conversion">
         <argument
-            android:name="@string/fromid_nav_arg"
+            android:name="fromId"
             android:defaultValue="0L"
             app:argType="long" />
         <argument
-            android:name="@string/fromshortname_nav_arg"
+            android:name="fromShortName"
             android:defaultValue="empty"
             app:argType="string" />
         <argument
-            android:name="@string/fromlongname_nav_arg"
+            android:name="fromLongName"
             android:defaultValue="empty"
             app:argType="string" />
     </fragment>
