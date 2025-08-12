@@ -4,8 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.dorrin.domain.entity.CurrencyEntity
+import com.dorrin.presentation.R
 
 internal class CurrencyListAdapter(
   private val allCurrencies: Array<CurrencyEntity>,
@@ -15,20 +18,50 @@ internal class CurrencyListAdapter(
   fun getItem(position: Int): CurrencyEntity = allCurrencies[position]
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-    val view = LayoutInflater.from(parent.context)
+    val context = parent.context
+    val view = LayoutInflater.from(context)
       .inflate(android.R.layout.simple_list_item_2, parent, false)
-    return ViewHolder(view)
+    val holder = ViewHolder(view)
+
+    view.setOnClickListener(holder.OnClickListener())
+
+    return holder
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    holder.textView1.text = getItem(position).shortName
-    holder.textView2.text = getItem(position).longName
+    val item = getItem(position)
+    holder.textView1.text = item.shortName
+    holder.textView2.text = item.longName
+    holder.tag = item
   }
 
   override fun getItemId(position: Int): Long = getItem(position).id
 
-  internal inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+  inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val textView1 = itemView.findViewById<TextView>(android.R.id.text1)!!
     val textView2 = itemView.findViewById<TextView>(android.R.id.text2)!!
+
+    var tag: CurrencyEntity
+      get() = itemView.tag as CurrencyEntity
+      set(value) {
+        itemView.tag = value
+      }
+
+    inner class OnClickListener : View.OnClickListener {
+      override fun onClick(v: View?) {
+        val currency = tag
+
+        v?.findNavController()?.navigate(
+          R.id.action_navigation_list_to_navigation_conversion,
+          v.context?.let { context ->
+            bundleOf(
+              context.getString(R.string.fromid_nav_arg) to currency.id,
+              context.getString(R.string.fromshortname_nav_arg) to currency.shortName,
+              context.getString(R.string.fromlongname_nav_arg) to currency.longName,
+            )
+          }
+        )
+      }
+    }
   }
 }

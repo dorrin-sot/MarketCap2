@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     app:startDestination="@id/navigation_list">
 
@@ -9,11 +9,29 @@
         android:id="@id/navigation_conversion"
         android:name="com.dorrin.presentation.conversion.ConversionFragment"
         android:label="@string/title_conversion"
-        tools:layout="@layout/fragment_conversion" />
+        tools:layout="@layout/fragment_conversion">
+        <argument
+            android:name="@string/fromid_nav_arg"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <argument
+            android:name="@string/fromshortname_nav_arg"
+            android:defaultValue="empty"
+            app:argType="string" />
+        <argument
+            android:name="@string/fromlongname_nav_arg"
+            android:defaultValue="empty"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@id/navigation_list"
         android:name="com.dorrin.presentation.currency_list.CurrencyListFragment"
         android:label="@string/title_currency_list"
-        tools:layout="@layout/fragment_currency_list" />
+        tools:layout="@layout/fragment_currency_list">
+        <action
+            android:id="@+id/action_navigation_list_to_navigation_conversion"
+            app:destination="@id/navigation_conversion"
+            app:popUpTo="@id/navigation_list" />
+    </fragment>
 </navigation>

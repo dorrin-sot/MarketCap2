@@ -49,15 +49,21 @@ internal class ConversionViewModel @Inject constructor(
       .subscribe { _allCurrencies.value = it }
   }
 
-  fun selectSourceCurrency(id: Long) {
-    _sourceCurrency.value = allCurrencies.value!!.first { it.id == id }
+  fun selectSourceCurrency(id: Long) = selectSourceCurrency(findCurrencyById(id))
+
+  fun selectTargetCurrency(id: Long) = selectTargetCurrency(findCurrencyById(id))
+
+  fun selectTargetCurrency(currency: CurrencyEntity) {
+    _targetCurrency.value = currency
     performConversion()
   }
 
-  fun selectTargetCurrency(id: Long) {
-    _targetCurrency.value = allCurrencies.value!!.first { it.id == id }
+  fun selectSourceCurrency(currency: CurrencyEntity) {
+    _sourceCurrency.value = currency
     performConversion()
   }
+
+  fun findCurrencyById(id: Long): CurrencyEntity = allCurrencies.value!!.first { it.id == id }
 
   fun performConversion() {
     val source = sourceCurrency.value

@@ -51,9 +51,4 @@ class CurrencyListFragment : Fragment() {
       }
     }
   }
-
-  companion object {
-    @JvmStatic
-    fun newInstance() = CurrencyListFragment()
-  }
 }

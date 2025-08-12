@@ -6,4 +6,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_conversion">Conversion</string>
     <string name="title_currency_list">Currency List</string>
+    <string name="fromid_nav_arg">fromId</string>
+    <string name="fromshortname_nav_arg">fromShortName</string>
+    <string name="fromlongname_nav_arg">fromLongName</string>
 </resources>

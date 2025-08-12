@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -19,6 +20,18 @@ class ConversionFragment : Fragment() {
   private val binding get() = _binding!!
 
   private val viewModel by viewModels<ConversionViewModel>()
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    arguments?.let { arguments ->
+      val fromId = arguments.getLong(getString(R.string.fromid_nav_arg))
+      val fromShortName = arguments.getString(getString(R.string.fromshortname_nav_arg))!!
+      val fromLongName = arguments.getString(getString(R.string.fromlongname_nav_arg))!!
+
+      viewModel.selectSourceCurrency(CurrencyEntity(fromId, fromShortName, fromLongName))
+    }
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -41,7 +54,15 @@ class ConversionFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     viewModel.allCurrencies.observe(viewLifecycleOwner, AllCurrenciesObserver())
-    binding.swapCurrenciesButton.setOnClickListener(SwapCurrenciesButtonOnClickListener())
+    viewModel.sourceCurrency.observe(
+      viewLifecycleOwner,
+      CurrencyObserver(binding.sourceCurrencySelector)
+    )
+    viewModel.targetCurrency.observe(
+      viewLifecycleOwner,
+      CurrencyObserver(binding.targetCurrencySelector)
+    )
+    binding.swapCurrenciesButton.setOnClickListener { viewModel.swapCurrencies() }
   }
 
   override fun onDestroyView() {
@@ -77,27 +98,10 @@ class ConversionFragment : Fragment() {
     }
   }
 
-  private inner class SwapCurrenciesButtonOnClickListener : View.OnClickListener {
-    override fun onClick(v: View?) {
-      viewModel.swapCurrencies()
-
-      mapOf(
-        viewModel.sourceCurrency to binding.sourceCurrencySelector,
-        viewModel.targetCurrency to binding.targetCurrencySelector,
-      ).forEach { liveData, selector ->
-        liveData.value.let {
-          selector.run {
-            if (it == null) setText("", false)
-            else setText(it.toString(), false)
-            dismissDropDown()
-          }
-        }
-      }
-    }
-  }
-
-  companion object {
-    @JvmStatic
-    fun newInstance() = ConversionFragment()
+  private inner class CurrencyObserver(
+    private val selector: AutoCompleteTextView,
+  ) : Observer<CurrencyEntity?> {
+    override fun onChanged(value: CurrencyEntity?) =
+      selector.setText(value?.toString() ?: "", false)
   }
 }
