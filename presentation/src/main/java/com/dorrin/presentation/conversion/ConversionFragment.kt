@@ -88,8 +88,8 @@ class ConversionFragment : Fragment() {
           atv.setAdapter(CurrencyAdapter(requireContext(), value))
 
           atv.onItemClickListener = when (atv.id) {
-            R.id.sourceCurrencySelector -> SourceOnItemSelectedListener()
-            R.id.targetCurrencySelector -> TargetOnItemSelectedListener()
+            R.id.source_currency_selector -> SourceOnItemSelectedListener()
+            R.id.target_currency_selector -> TargetOnItemSelectedListener()
             else -> throw IllegalAccessException()
           }
 

@@ -43,7 +43,7 @@ class CurrencyListFragment : Fragment() {
 
   private inner class AllCurrenciesObserver : Observer<List<CurrencyEntity>> {
     override fun onChanged(value: List<CurrencyEntity>) {
-      binding.currencyList.run {
+      binding.currencyRecyclerView.run {
         val linearLayoutManager = LinearLayoutManager(context)
         layoutManager = linearLayoutManager
         adapter = CurrencyListAdapter(value.toTypedArray())

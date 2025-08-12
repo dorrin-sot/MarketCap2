@@ -14,30 +14,30 @@ internal class ConversionView(context: Context, attrs: AttributeSet? = null) :
   LinearLayout(context, attrs) {
   private val binding = ViewConversionBinding.inflate(LayoutInflater.from(context), this, true)
 
-  private val sourceShortNameTxtVw get() = binding.sourceShortNameTxtVw
-  private val targetShortNameTxtVw get() = binding.targetShortNameTxtVw
-  private val rateTxtVw get() = binding.rateTxtVw
+  private val sourceShortNameTextView get() = binding.sourceShortNameTextView
+  private val targetShortNameTextView get() = binding.targetShortNameTextView
+  private val rateTextView get() = binding.rateTextView
 
   var sourceShortName: String?
-    get() = sourceShortNameTxtVw.text.toString()
+    get() = sourceShortNameTextView.text.toString()
     set(value) {
-      sourceShortNameTxtVw.text = value.orEmpty()
+      sourceShortNameTextView.text = value.orEmpty()
       invalidate()
       requestLayout()
     }
 
   var targetShortName: String?
-    get() = targetShortNameTxtVw.text.toString()
+    get() = targetShortNameTextView.text.toString()
     set(value) {
-      targetShortNameTxtVw.text = value.orEmpty()
+      targetShortNameTextView.text = value.orEmpty()
       invalidate()
       requestLayout()
     }
 
   var rate: String?
-    get() = rateTxtVw.text.toString()
+    get() = rateTextView.text.toString()
     set(value) {
-      rateTxtVw.text = value.orEmpty()
+      rateTextView.text = value.orEmpty()
       invalidate()
       requestLayout()
     }
