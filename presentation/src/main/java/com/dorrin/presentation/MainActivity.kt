@@ -5,7 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.dorrin.presentation.conversion.ConversionFragment
+import com.dorrin.presentation.currency_list.CurrencyListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()
-        .add(R.id.main, ConversionFragment.Companion.newInstance())
+        .add(R.id.main, CurrencyListFragment.newInstance())
         .commit()
     }
   }
