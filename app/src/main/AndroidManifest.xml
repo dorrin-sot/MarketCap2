@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MarketCapApplication"
@@ -27,9 +28,11 @@
             android:name="com.dorrin.presentation.ConvertActivity"
             android:exported="true">
             <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;toId=65" />
             <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;fromShortName=USD&amp;fromLongName=United+States+Dollar" />
             <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?toId=65&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
             <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;fromShortName=USD&amp;fromLongName=United+States+Dollar&amp;toId=65&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 

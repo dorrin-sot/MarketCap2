@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.dorrin.presentation.conversion.ConversionFragment
+import com.dorrin.presentation.conversion.ConversionFragmentArgs
 import com.dorrin.presentation.databinding.ActivityConvertBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,7 +50,7 @@ class ConvertActivity : AppCompatActivity() {
       val bundle = bundleOf(
         *appLinkData
           ?.queryParameterNames
-          ?.map { it to appLinkData.getQueryParameters(it) }
+          ?.map { it to appLinkData.getQueryParameters(it)[0].replace("+", " ") }
           ?.toTypedArray()
           .let { it ?: emptyArray() }
       )
@@ -58,7 +59,7 @@ class ConvertActivity : AppCompatActivity() {
       supportFragmentManager
         .beginTransaction()
         .add(
-          R.id.nav_host_fragment_container,
+          binding.navHostFragmentContainer.id,
           ConversionFragment::class.java,
           bundle
         )

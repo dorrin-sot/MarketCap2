@@ -12,26 +12,32 @@
         tools:layout="@layout/fragment_conversion">
         <argument
             android:name="fromId"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="fromShortName"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="fromLongName"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="toId"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="toShortName"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="toLongName"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
     </fragment>

@@ -44,10 +44,20 @@ internal class ConversionViewModel @Inject constructor(
   }
 
   private fun fetchAllCurrencies() {
+    Log.d("ConversionViewModel", "fetchAllCurrencies")
     getAllCurrenciesObs?.dispose()
     getAllCurrenciesObs = getAllCurrenciesUseCase()
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe { _allCurrencies.value = it }
+      .subscribe {
+        _allCurrencies.value = it
+
+        val empty = CurrencyEntity.empty()
+        val source = sourceCurrency.value ?: empty
+        val target = targetCurrency.value ?: empty
+
+        if (source == empty.copy(id = source.id)) selectSourceCurrency(source.id)
+        if (target == empty.copy(id = target.id)) selectTargetCurrency(target.id)
+      }
   }
 
   fun selectSourceCurrency(id: Long) {
@@ -72,15 +82,20 @@ internal class ConversionViewModel @Inject constructor(
     performConversion()
   }
 
-  fun findCurrencyById(id: Long): CurrencyEntity = allCurrencies.value!!.first { it.id == id }
+  fun findCurrencyById(id: Long): CurrencyEntity =
+    (allCurrencies.value ?: emptyList())
+      .ifEmpty { listOf(CurrencyEntity.empty().copy(id)) }
+      .first { it.id == id }
 
   fun performConversion() {
-    val source = sourceCurrency.value
-    val target = targetCurrency.value
+    val empty = CurrencyEntity.empty()
+    val source = sourceCurrency.value ?: empty
+    val target = targetCurrency.value ?: empty
 
     _conversion.value = CurrencyExchangeRateEntity.empty()
 
-    if (source == null || target == null) return
+    if (source == empty.copy(source.id)) return
+    if (target == empty.copy(target.id)) return
 
     currencyExchangeRateObs?.dispose()
     currencyExchangeRateObs = currencyExchangeRateUseCase(source, target)
