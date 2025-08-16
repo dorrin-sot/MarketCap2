@@ -23,8 +23,6 @@ internal class CurrencyAdapter : ArrayAdapter<CurrencyEntity> {
 
   override fun getItem(position: Int): CurrencyEntity = currencies[position]
 
-  override fun getItemId(position: Int): Long = getItem(position).id
-
   override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
     createBindingView(position, convertView, parent)
 

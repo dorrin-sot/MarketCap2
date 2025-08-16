@@ -11,22 +11,12 @@
         android:label="@string/title_conversion"
         tools:layout="@layout/fragment_conversion">
         <argument
-            android:name="fromId"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
             android:name="fromShortName"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="fromLongName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="toId"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />

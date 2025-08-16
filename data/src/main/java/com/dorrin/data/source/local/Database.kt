@@ -7,7 +7,7 @@ import com.dorrin.data.model.CurrencyModel
 
 @Database(
   entities = [CurrencyModel::class, CurrencyExchangeRateModel::class],
-  version = 2
+  version = 3
 )
 abstract class Database : RoomDatabase() {
   abstract fun localDataSource(): LocalDataSourceImpl

@@ -29,27 +29,17 @@ class ConversionFragment : Fragment() {
       val args = ConversionFragmentArgs.fromBundle(it)
       Log.d("ConversionFragment", "args: $args")
 
-      val fromId = args.fromId?.toLong()
       val fromShortName = args.fromShortName
       val fromLongName = args.fromLongName
 
-      if (fromId != null) {
-        if (fromShortName != null && fromLongName != null)
-          viewModel.selectSourceCurrency(CurrencyEntity(fromId, fromShortName, fromLongName))
-        else
-          viewModel.selectSourceCurrency(fromId)
-      }
+      if (fromShortName != null && fromLongName != null)
+        viewModel.selectSourceCurrency(CurrencyEntity(fromShortName, fromLongName))
 
-      val toId = args.toId?.toLong()
       val toShortName = args.toShortName
       val toLongName = args.toLongName
 
-      if (toId != null) {
-        if (toShortName != null && toLongName != null)
-          viewModel.selectTargetCurrency(CurrencyEntity(toId, toShortName, toLongName))
-        else
-          viewModel.selectTargetCurrency(toId)
-      }
+      if (toShortName != null && toLongName != null)
+        viewModel.selectTargetCurrency(CurrencyEntity(toShortName, toLongName))
     }
   }
 
@@ -93,12 +83,12 @@ class ConversionFragment : Fragment() {
 
   private inner class SourceOnItemSelectedListener : AdapterView.OnItemClickListener {
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
-      viewModel.selectSourceCurrency(id)
+      viewModel.selectSourceCurrency(position)
   }
 
   private inner class TargetOnItemSelectedListener : AdapterView.OnItemClickListener {
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
-      viewModel.selectTargetCurrency(id)
+      viewModel.selectTargetCurrency(position)
   }
 
   private inner class AllCurrenciesObserver : Observer<List<CurrencyEntity>> {

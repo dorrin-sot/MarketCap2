@@ -55,37 +55,46 @@ internal class ConversionViewModel @Inject constructor(
         val source = sourceCurrency.value ?: empty
         val target = targetCurrency.value ?: empty
 
-        if (source == empty.copy(id = source.id)) selectSourceCurrency(source.id)
-        if (target == empty.copy(id = target.id)) selectTargetCurrency(target.id)
+        if (source == empty.copy(shortName = source.shortName)) selectSourceCurrency(source.shortName)
+        if (target == empty.copy(shortName = target.shortName)) selectTargetCurrency(target.shortName)
       }
   }
 
-  fun selectSourceCurrency(id: Long) {
-    Log.d("ConversionViewModel", "selectSourceCurrency - $id")
-    selectSourceCurrency(findCurrencyById(id))
+  fun selectSourceCurrency(position: Int) {
+    Log.d("ConversionViewModel", "selectSourceCurrency - $position")
+    selectSourceCurrency(allCurrencies.value!![position])
   }
 
-  fun selectTargetCurrency(id: Long) {
-    Log.d("ConversionViewModel", "selectTargetCurrency - $id")
-    selectTargetCurrency(findCurrencyById(id))
+  fun selectTargetCurrency(position: Int) {
+    Log.d("ConversionViewModel", "selectTargetCurrency - $position")
+    selectTargetCurrency(allCurrencies.value!![position])
   }
 
-  fun selectTargetCurrency(currency: CurrencyEntity) {
+  fun selectSourceCurrency(shortName: String) {
+    Log.d("ConversionViewModel", "selectSourceCurrency - $shortName")
+    findCurrencyByShortName(shortName)?.let { selectSourceCurrency(it) }
+  }
+
+  fun selectTargetCurrency(shortName: String) {
+    Log.d("ConversionViewModel", "selectTargetCurrency - $shortName")
+    findCurrencyByShortName(shortName)?.let { selectTargetCurrency(it) }
+  }
+
+  private fun selectTargetCurrency(currency: CurrencyEntity) {
     Log.d("ConversionViewModel", "selectTargetCurrency - $currency")
     _targetCurrency.value = currency
     performConversion()
   }
 
-  fun selectSourceCurrency(currency: CurrencyEntity) {
+  private fun selectSourceCurrency(currency: CurrencyEntity) {
     Log.d("ConversionViewModel", "selectSourceCurrency - $currency")
     _sourceCurrency.value = currency
     performConversion()
   }
 
-  fun findCurrencyById(id: Long): CurrencyEntity =
+  private fun findCurrencyByShortName(shortName: String): CurrencyEntity? =
     (allCurrencies.value ?: emptyList())
-      .ifEmpty { listOf(CurrencyEntity.empty().copy(id)) }
-      .first { it.id == id }
+      .firstOrNull { it.shortName == shortName }
 
   fun performConversion() {
     val empty = CurrencyEntity.empty()
@@ -94,8 +103,8 @@ internal class ConversionViewModel @Inject constructor(
 
     _conversion.value = CurrencyExchangeRateEntity.empty()
 
-    if (source == empty.copy(source.id)) return
-    if (target == empty.copy(target.id)) return
+    if (source == empty.copy(source.shortName)) return
+    if (target == empty.copy(target.shortName)) return
 
     currencyExchangeRateObs?.dispose()
     currencyExchangeRateObs = currencyExchangeRateUseCase(source, target)

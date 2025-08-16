@@ -6,8 +6,6 @@ data class CurrencyExchangeRateEntity(
   val rate: Float,
   val time: DateTimeEntity,
 ) {
-  fun isEmpty(): Boolean = this == empty()
-
   companion object {
     fun empty(): CurrencyExchangeRateEntity =
       CurrencyExchangeRateEntity(

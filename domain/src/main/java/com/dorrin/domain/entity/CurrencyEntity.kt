@@ -1,7 +1,6 @@
 package com.dorrin.domain.entity
 
 data class CurrencyEntity(
-  val id: Long,
   val shortName: String,
   val longName: String,
 ) {
@@ -10,6 +9,6 @@ data class CurrencyEntity(
   }
 
   companion object {
-    fun empty(): CurrencyEntity = CurrencyEntity(0, "empty", "empty")
+    fun empty(): CurrencyEntity = CurrencyEntity("empty", "empty")
   }
 }

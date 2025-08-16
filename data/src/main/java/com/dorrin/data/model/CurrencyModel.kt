@@ -5,11 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class CurrencyModel(
-  @PrimaryKey val id: Long,
-  val shortName: String,
+  @PrimaryKey val shortName: String,
   val longName: String,
 ) {
   companion object {
-    internal fun empty(): CurrencyModel = CurrencyModel(0, "empty", "empty")
+    internal fun empty(): CurrencyModel = CurrencyModel("empty", "empty")
   }
 }

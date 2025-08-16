@@ -33,8 +33,6 @@ internal class CurrencyListAdapter(
     holder.tag = item
   }
 
-  override fun getItemId(position: Int): Long = getItem(position).id
-
   inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val textView1 = itemView.findViewById<TextView>(android.R.id.text1)!!
     val textView2 = itemView.findViewById<TextView>(android.R.id.text2)!!
@@ -51,7 +49,6 @@ internal class CurrencyListAdapter(
 
         val action = CurrencyListFragmentDirections.actionNavigationListToNavigationConversion()
           .apply {
-            fromId = "${currency.id}"
             fromShortName = currency.shortName
             fromLongName = currency.longName
           }
