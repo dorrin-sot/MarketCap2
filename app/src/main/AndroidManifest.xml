@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -18,6 +19,26 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name="com.dorrin.presentation.ConvertActivity"
+            android:exported="true">
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;fromShortName=USD&amp;fromLongName=United+States+Dollar" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?toId=65&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;fromShortName=USD&amp;fromLongName=United+States+Dollar&amp;toId=65&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="market-cap-back.liara.run" />
+                <data android:pathPrefix="/convert-activity" />
             </intent-filter>
         </activity>
     </application>

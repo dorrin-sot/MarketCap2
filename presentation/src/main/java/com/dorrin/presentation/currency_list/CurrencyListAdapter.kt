@@ -49,12 +49,14 @@ internal class CurrencyListAdapter(
       override fun onClick(v: View?) {
         val currency = tag
 
-        val action = CurrencyListFragmentDirections.actionNavigationListToNavigationConversion()
-          .apply {
-            fromId = currency.id
-            fromShortName = currency.shortName
-            fromLongName = currency.longName
-          }
+        val action = CurrencyListFragmentDirections.actionNavigationListToNavigationConversion(
+          "${currency.id}",
+          currency.shortName,
+          currency.longName,
+          null,
+          null,
+          null,
+        )
         v?.findNavController()?.navigate(action)
       }
     }

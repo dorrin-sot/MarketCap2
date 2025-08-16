@@ -1,5 +1,6 @@
 package com.dorrin.presentation.conversion
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,16 +50,24 @@ internal class ConversionViewModel @Inject constructor(
       .subscribe { _allCurrencies.value = it }
   }
 
-  fun selectSourceCurrency(id: Long) = selectSourceCurrency(findCurrencyById(id))
+  fun selectSourceCurrency(id: Long) {
+    Log.d("ConversionViewModel", "selectSourceCurrency - $id")
+    selectSourceCurrency(findCurrencyById(id))
+  }
 
-  fun selectTargetCurrency(id: Long) = selectTargetCurrency(findCurrencyById(id))
+  fun selectTargetCurrency(id: Long) {
+    Log.d("ConversionViewModel", "selectTargetCurrency - $id")
+    selectTargetCurrency(findCurrencyById(id))
+  }
 
   fun selectTargetCurrency(currency: CurrencyEntity) {
+    Log.d("ConversionViewModel", "selectTargetCurrency - $currency")
     _targetCurrency.value = currency
     performConversion()
   }
 
   fun selectSourceCurrency(currency: CurrencyEntity) {
+    Log.d("ConversionViewModel", "selectSourceCurrency - $currency")
     _sourceCurrency.value = currency
     performConversion()
   }
