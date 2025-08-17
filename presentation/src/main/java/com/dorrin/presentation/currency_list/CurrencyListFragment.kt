@@ -79,7 +79,7 @@ class CurrencyListFragment : Fragment(), MenuProvider {
   private inner class FilteredCurrenciesObserver : Observer<List<CurrencyEntity>> {
     override fun onChanged(value: List<CurrencyEntity>) {
       (binding.currencyRecyclerView.adapter as? CurrencyListAdapter)
-        ?.filter(value)
+        ?.filter(viewModel.currencyQuery.value, value)
     }
   }
 
