@@ -26,8 +26,9 @@ internal class ConversionViewModel @Inject constructor(
   private val currencyExchangeRateUseCase: GetCurrencyExchangeRateUseCase,
   private val currencyUseCase: GetCurrencyUseCase,
 ) : ViewModel() {
-  private var _allCurrencies = MutableLiveData<List<CurrencyEntity>>()
-  val allCurrencies: LiveData<List<CurrencyEntity>> get() = _allCurrencies
+  val allCurrencies: LiveData<List<CurrencyEntity>> = getAllCurrenciesUseCase()
+    .toFlowable(BackpressureStrategy.DROP)
+    .toLiveData()
 
   private var _sourceCurrencyShortName = MutableLiveData<String?>(null)
   val sourceCurrencyShortName: LiveData<String?> get() = _sourceCurrencyShortName
@@ -60,25 +61,7 @@ internal class ConversionViewModel @Inject constructor(
 
   val updateTime = conversion.map { "As of ${it.time}" }
 
-  private var getAllCurrenciesObs: Disposable? = null
   private var currencyExchangeRateObs: Disposable? = null
-
-  init {
-    fetchAllCurrencies()
-  }
-
-  private fun fetchAllCurrencies() {
-    Log.d("ConversionViewModel", "fetchAllCurrencies")
-    getAllCurrenciesObs?.dispose()
-    getAllCurrenciesObs = getAllCurrenciesUseCase()
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe {
-        _allCurrencies.value = it
-
-        sourceCurrencyShortName.value?.let { selectSourceCurrency(it) }
-        targetCurrencyShortName.value?.let { selectTargetCurrency(it) }
-      }
-  }
 
   fun selectSourceCurrency(position: Int) {
     Log.d("ConversionViewModel", "selectSourceCurrency - $position")
@@ -128,7 +111,6 @@ internal class ConversionViewModel @Inject constructor(
 
   override fun onCleared() {
     super.onCleared()
-    getAllCurrenciesObs?.dispose()
     currencyExchangeRateObs?.dispose()
   }
 }
