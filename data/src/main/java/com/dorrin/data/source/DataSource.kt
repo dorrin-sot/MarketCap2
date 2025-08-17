@@ -2,6 +2,7 @@ package com.dorrin.data.source
 
 import com.dorrin.data.model.CurrencyExchangeRateModel
 import com.dorrin.data.model.CurrencyModel
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
 interface DataSource {
@@ -11,4 +12,6 @@ interface DataSource {
     fromShortName: String,
     toShortName: String,
   ): Single<CurrencyExchangeRateModel>
+
+  fun getCurrency(shortName: String): Maybe<CurrencyModel>
 }

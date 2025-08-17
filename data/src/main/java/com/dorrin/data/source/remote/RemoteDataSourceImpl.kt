@@ -3,13 +3,18 @@ package com.dorrin.data.source.remote
 import com.dorrin.data.model.CurrencyExchangeRateModel
 import com.dorrin.data.model.CurrencyModel
 import com.dorrin.data.source.DataSource
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RemoteDataSourceImpl : DataSource {
   @GET("/all-currencies")
   override fun getAllCurrencies(): Single<List<CurrencyModel>>
+
+  @GET("/currency/{shortName}")
+  override fun getCurrency(@Path("shortName") shortName: String): Maybe<CurrencyModel>
 
   @GET("/convert")
   override fun getExchangeRate(

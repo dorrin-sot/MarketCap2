@@ -2,8 +2,10 @@ package com.dorrin.marketcap.di
 
 import com.dorrin.domain.repository.AllCurrenciesRepository
 import com.dorrin.domain.repository.CurrencyExchangeRateRepository
+import com.dorrin.domain.repository.CurrencyRepository
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
+import com.dorrin.domain.usecase.GetCurrencyUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,4 +21,8 @@ internal class UseCaseProvidersModule {
   @Provides
   fun provideGetCurrencyExchangeRateUseCase(repository: CurrencyExchangeRateRepository): GetCurrencyExchangeRateUseCase =
     GetCurrencyExchangeRateUseCase(repository)
+
+  @Provides
+  fun provideGetCurrencyUseCase(repository: CurrencyRepository): GetCurrencyUseCase =
+    GetCurrencyUseCase(repository)
 }
