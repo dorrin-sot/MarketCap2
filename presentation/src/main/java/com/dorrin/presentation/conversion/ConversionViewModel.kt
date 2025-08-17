@@ -56,9 +56,7 @@ internal class ConversionViewModel @Inject constructor(
     sourceCurrencyObs?.dispose()
     sourceCurrencyObs = currencyUseCase(shortName)
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe {
-        _sourceCurrency.value = it
-      }
+      .subscribe { _sourceCurrency.value = it }
   }
   private val targetCurrencyShortNameObs = Observer<String?> { shortName ->
     performConversion()
@@ -66,10 +64,7 @@ internal class ConversionViewModel @Inject constructor(
     targetCurrencyObs?.dispose()
     targetCurrencyObs = currencyUseCase(shortName)
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe {
-        _targetCurrency.value = it
-        performConversion()
-      }
+      .subscribe { _targetCurrency.value = it }
   }
 
   init {
