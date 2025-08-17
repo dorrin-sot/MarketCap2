@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -48,35 +49,21 @@ class CurrencyListFragment : Fragment(), MenuProvider {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     viewModel.allCurrencies.observe(viewLifecycleOwner, AllCurrenciesObserver())
+    viewModel.filteredCurrencies.observe(viewLifecycleOwner, FilteredCurrenciesObserver())
   }
 
   override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
     this.menu = menu
     menuInflater.inflate(R.menu.currency_list_toolbar_menu, menu)
-    onMenuItemSelected(menu.findItem(R.id.toolbar_search_off)) // search off by default
-  }
 
-  override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-    when (menuItem.itemId) {
-      R.id.toolbar_search -> {
-        updateSearchBarVisibility(true)
-        true
-      }
-
-      R.id.toolbar_search_off -> {
-        updateSearchBarVisibility(false)
-        true
-      }
-
-      else -> false
+    (menu.findItem(R.id.toolbar_search).actionView as? SearchView)?.let { searchView ->
+      searchView.setQuery(viewModel.currencyQuery.value, false)
+      searchView.setOnQueryTextListener(SearchQueryListener())
     }
 
-
-  private fun updateSearchBarVisibility(visible: Boolean) {
-    menu.findItem(R.id.toolbar_search).isVisible = !visible
-    menu.findItem(R.id.toolbar_search_off).isVisible = visible
-    // todo show and hide search bar
   }
+
+  override fun onMenuItemSelected(menuItem: MenuItem): Boolean = false
 
   private inner class AllCurrenciesObserver : Observer<List<CurrencyEntity>> {
     override fun onChanged(value: List<CurrencyEntity>) {
@@ -87,5 +74,20 @@ class CurrencyListFragment : Fragment(), MenuProvider {
         addItemDecoration(DividerItemDecoration(context, linearLayoutManager.orientation))
       }
     }
+  }
+
+  private inner class FilteredCurrenciesObserver : Observer<List<CurrencyEntity>> {
+    override fun onChanged(value: List<CurrencyEntity>) {
+      (binding.currencyRecyclerView.adapter as? CurrencyListAdapter)
+        ?.filter(value)
+    }
+  }
+
+  private inner class SearchQueryListener : SearchView.OnQueryTextListener {
+    override fun onQueryTextSubmit(query: String?): Boolean = search(query)
+
+    override fun onQueryTextChange(newText: String?): Boolean = search(newText)
+
+    private fun search(query: String?): Boolean = viewModel.search(query?.trim()).let { true }
   }
 }
