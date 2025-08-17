@@ -30,16 +30,10 @@ class ConversionFragment : Fragment() {
       Log.d("ConversionFragment", "args: $args")
 
       val fromShortName = args.fromShortName
-      val fromLongName = args.fromLongName
-
-      if (fromShortName != null && fromLongName != null)
-        viewModel.selectSourceCurrency(CurrencyEntity(fromShortName, fromLongName))
-
       val toShortName = args.toShortName
-      val toLongName = args.toLongName
 
-      if (toShortName != null && toLongName != null)
-        viewModel.selectTargetCurrency(CurrencyEntity(toShortName, toLongName))
+      if (fromShortName != null) viewModel.selectSourceCurrency(fromShortName)
+      if (toShortName != null) viewModel.selectTargetCurrency(toShortName)
     }
   }
 

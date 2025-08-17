@@ -2,9 +2,12 @@ package com.dorrin.presentation.conversion
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
@@ -12,6 +15,9 @@ import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -23,17 +29,21 @@ internal class ConversionViewModel @Inject constructor(
   private var _allCurrencies = MutableLiveData<List<CurrencyEntity>>()
   val allCurrencies: LiveData<List<CurrencyEntity>> get() = _allCurrencies
 
-  private var _sourceCurrency = MutableLiveData<CurrencyEntity?>(null)
+  private var _sourceCurrencyShortName = MutableLiveData<String?>(null)
+  val sourceCurrencyShortName: LiveData<String?> get() = _sourceCurrencyShortName
+
+  private var _targetCurrencyShortName = MutableLiveData<String?>(null)
+  val targetCurrencyShortName: LiveData<String?> get() = _targetCurrencyShortName
+
+  private val _sourceCurrency = CurrencyMediatorLiveData(sourceCurrencyShortName)
   val sourceCurrency: LiveData<CurrencyEntity?> get() = _sourceCurrency
 
-  private var _targetCurrency = MutableLiveData<CurrencyEntity?>(null)
+  private val _targetCurrency = CurrencyMediatorLiveData(targetCurrencyShortName)
   val targetCurrency: LiveData<CurrencyEntity?> get() = _targetCurrency
 
   private var _conversion = MutableLiveData(CurrencyExchangeRateEntity.empty())
   private val conversion: LiveData<CurrencyExchangeRateEntity> get() = _conversion
 
-  val sourceCurrencyShortName get() = sourceCurrency.map { it?.shortName }
-  val targetCurrencyShortName get() = targetCurrency.map { it?.shortName }
   val rate = conversion.map { DecimalFormat("#,###.##").format(it.rate) }
 
   private var getAllCurrenciesObs: Disposable? = null
@@ -51,60 +61,46 @@ internal class ConversionViewModel @Inject constructor(
       .subscribe {
         _allCurrencies.value = it
 
-        val empty = CurrencyEntity.empty()
-        val source = sourceCurrency.value ?: empty
-        val target = targetCurrency.value ?: empty
-
-        if (source == empty.copy(shortName = source.shortName)) selectSourceCurrency(source.shortName)
-        if (target == empty.copy(shortName = target.shortName)) selectTargetCurrency(target.shortName)
+        sourceCurrencyShortName.value?.let { selectSourceCurrency(it) }
+        targetCurrencyShortName.value?.let { selectTargetCurrency(it) }
       }
   }
 
   fun selectSourceCurrency(position: Int) {
     Log.d("ConversionViewModel", "selectSourceCurrency - $position")
-    selectSourceCurrency(allCurrencies.value!![position])
+    selectSourceCurrency(allCurrencies.value!![position].shortName)
   }
 
   fun selectTargetCurrency(position: Int) {
     Log.d("ConversionViewModel", "selectTargetCurrency - $position")
-    selectTargetCurrency(allCurrencies.value!![position])
+    selectTargetCurrency(allCurrencies.value!![position].shortName)
   }
 
   fun selectSourceCurrency(shortName: String) {
     Log.d("ConversionViewModel", "selectSourceCurrency - $shortName")
-    findCurrencyByShortName(shortName)?.let { selectSourceCurrency(it) }
+    _sourceCurrencyShortName.value = shortName
   }
 
   fun selectTargetCurrency(shortName: String) {
     Log.d("ConversionViewModel", "selectTargetCurrency - $shortName")
-    findCurrencyByShortName(shortName)?.let { selectTargetCurrency(it) }
-  }
-
-  private fun selectTargetCurrency(currency: CurrencyEntity) {
-    Log.d("ConversionViewModel", "selectTargetCurrency - $currency")
-    _targetCurrency.value = currency
-    performConversion()
-  }
-
-  private fun selectSourceCurrency(currency: CurrencyEntity) {
-    Log.d("ConversionViewModel", "selectSourceCurrency - $currency")
-    _sourceCurrency.value = currency
-    performConversion()
+    _targetCurrencyShortName.value = shortName
   }
 
   private fun findCurrencyByShortName(shortName: String): CurrencyEntity? =
-    (allCurrencies.value ?: emptyList())
-      .firstOrNull { it.shortName == shortName }
+    allCurrencies.value?.firstOrNull { it.shortName == shortName }
 
   fun performConversion() {
+    Log.d(
+      "ConversionViewModel",
+      "performConversion - ${sourceCurrency.value}, ${targetCurrency.value}"
+    )
+    _conversion.value = CurrencyExchangeRateEntity.empty()
+
     val empty = CurrencyEntity.empty()
     val source = sourceCurrency.value ?: empty
     val target = targetCurrency.value ?: empty
 
-    _conversion.value = CurrencyExchangeRateEntity.empty()
-
-    if (source == empty.copy(source.shortName)) return
-    if (target == empty.copy(target.shortName)) return
+    if (source == empty || target == empty) return
 
     currencyExchangeRateObs?.dispose()
     currencyExchangeRateObs = currencyExchangeRateUseCase(source, target)
@@ -113,16 +109,44 @@ internal class ConversionViewModel @Inject constructor(
   }
 
   fun swapCurrencies() {
-    val source = sourceCurrency.value
-    val target = targetCurrency.value
-    _sourceCurrency.value = target
-    _targetCurrency.value = source
-    performConversion()
+    val source = sourceCurrencyShortName.value
+    val target = targetCurrencyShortName.value
+    _sourceCurrencyShortName.value = target
+    _targetCurrencyShortName.value = source
   }
 
   override fun onCleared() {
     super.onCleared()
     getAllCurrenciesObs?.dispose()
     currencyExchangeRateObs?.dispose()
+    _sourceCurrency.removeSources()
+    _targetCurrency.removeSources()
+  }
+
+  private inner class CurrencyMediatorLiveData(private val shortNameLiveData: LiveData<String?>) :
+    MediatorLiveData<CurrencyEntity?>(null) {
+    private var job: Job? = null
+
+    init {
+      val obs = Observer<Any> {
+        shortNameLiveData.value?.let { value = findCurrencyByShortName(it) }
+        Log.d("CurrencyMediatorLiveData", "obs 1 $value")
+
+        job?.cancel().also { job = null }
+        job = viewModelScope.launch {
+          delay(500)
+          performConversion()
+        }
+      }
+
+      addSource(allCurrencies, obs)
+      addSource(shortNameLiveData, obs)
+    }
+
+    fun removeSources() {
+      removeSource(allCurrencies)
+      removeSource(shortNameLiveData)
+      job?.cancel().also { job = null }
+    }
   }
 }

@@ -28,10 +28,11 @@
             android:name="com.dorrin.presentation.ConvertActivity"
             android:exported="true">
             <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity" />
-            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;toId=65" />
-            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;fromShortName=USD&amp;fromLongName=United+States+Dollar" />
-            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?toId=65&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
-            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromId=146&amp;fromShortName=USD&amp;fromLongName=United+States+Dollar&amp;toId=65&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromShortName=USD&amp;toShortName=IRR" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromShortName=USD&amp;toShortName=IRR" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromShortName=USD&amp;fromLongName=United+States+Dollar" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?toShortName=IRR&amp;toLongName=Iranian+Rial" />
+            <tools:validation testUrl="https://market-cap-back.liara.run/convert-activity?fromShortName=USD&amp;fromLongName=United+States+Dollar&amp;toShortName=IRR&amp;toLongName=Iranian+Rial" />
 
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

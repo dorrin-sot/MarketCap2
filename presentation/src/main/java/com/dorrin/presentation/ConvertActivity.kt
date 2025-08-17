@@ -10,7 +10,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.dorrin.presentation.conversion.ConversionFragment
-import com.dorrin.presentation.conversion.ConversionFragmentArgs
 import com.dorrin.presentation.databinding.ActivityConvertBinding
 import dagger.hilt.android.AndroidEntryPoint
 
