@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:visible="false"
+        android:id="@+id/toolbar_search"
+        android:icon="@drawable/outline_search_24"
+        android:title="@string/title_search" />
+
+    <item
+        android:visible="false"
+        android:id="@+id/toolbar_search_off"
+        android:icon="@drawable/outline_search_off_24"
+        android:title="@string/title_dismiss_search" />
+</menu>

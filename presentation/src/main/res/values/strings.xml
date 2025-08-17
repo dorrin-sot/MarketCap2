@@ -4,4 +4,6 @@
     <string name="swap_currencies">Swap Currencies</string>
     <string name="title_conversion">Conversion</string>
     <string name="title_currency_list">Currency List</string>
+    <string name="title_search">Search</string>
+    <string name="title_dismiss_search">Dismiss search</string>
 </resources>
