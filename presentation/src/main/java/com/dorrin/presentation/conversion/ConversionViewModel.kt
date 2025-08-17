@@ -142,6 +142,8 @@ internal class ConversionViewModel @Inject constructor(
     super.onCleared()
     getAllCurrenciesObs?.dispose()
     currencyExchangeRateObs?.dispose()
+    sourceCurrencyObs?.dispose()
+    targetCurrencyObs?.dispose()
     sourceCurrencyShortName.removeObserver(sourceCurrencyShortnameObs)
     targetCurrencyShortName.removeObserver(targetCurrencyShortNameObs)
   }
