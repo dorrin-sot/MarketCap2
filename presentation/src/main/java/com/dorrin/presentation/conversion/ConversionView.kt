@@ -8,6 +8,7 @@ import com.dorrin.presentation.R
 import com.dorrin.presentation.R.styleable.ConversionView_rate
 import com.dorrin.presentation.R.styleable.ConversionView_sourceShortName
 import com.dorrin.presentation.R.styleable.ConversionView_targetShortName
+import com.dorrin.presentation.R.styleable.ConversionView_updateTime
 import com.dorrin.presentation.databinding.ViewConversionBinding
 
 internal class ConversionView(context: Context, attrs: AttributeSet? = null) :
@@ -17,6 +18,7 @@ internal class ConversionView(context: Context, attrs: AttributeSet? = null) :
   private val sourceShortNameTextView get() = binding.sourceShortNameTextView
   private val targetShortNameTextView get() = binding.targetShortNameTextView
   private val rateTextView get() = binding.rateTextView
+  private val updateTimeTextView get() = binding.updateTimeTextView
 
   var sourceShortName: String?
     get() = sourceShortNameTextView.text.toString()
@@ -42,8 +44,20 @@ internal class ConversionView(context: Context, attrs: AttributeSet? = null) :
       requestLayout()
     }
 
+  var updateTime: String?
+    get() = updateTimeTextView.text.toString()
+    set(value) {
+      updateTimeTextView.text = value.orEmpty()
+      invalidate()
+      requestLayout()
+    }
+
   override fun getVisibility(): Int =
-    if (sourceShortName.isNullOrEmpty() || targetShortName.isNullOrEmpty() || rate.isNullOrEmpty()) GONE else VISIBLE
+    if (sourceShortName.isNullOrEmpty() ||
+      targetShortName.isNullOrEmpty() ||
+      rate.isNullOrEmpty() ||
+      updateTime.isNullOrEmpty()) GONE
+    else VISIBLE
 
   init {
     context.theme.obtainStyledAttributes(
@@ -57,6 +71,7 @@ internal class ConversionView(context: Context, attrs: AttributeSet? = null) :
         sourceShortName = getString(ConversionView_sourceShortName) ?: ""
         targetShortName = getString(ConversionView_targetShortName) ?: ""
         rate = getString(ConversionView_rate) ?: ""
+        updateTime = getString(ConversionView_updateTime) ?: ""
       } finally {
         recycle()
       }

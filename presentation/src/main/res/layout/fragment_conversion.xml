@@ -71,8 +71,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             app:rate="@{viewModel.rate}"
+            app:updateTime="@{viewModel.updateTime}"
             app:sourceShortName="@{viewModel.sourceCurrencyShortName}"
             app:targetShortName="@{viewModel.targetCurrencyShortName}" />
-
     </LinearLayout>
 </layout>

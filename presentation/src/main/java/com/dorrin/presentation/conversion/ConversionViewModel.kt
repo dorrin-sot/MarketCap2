@@ -46,6 +46,8 @@ internal class ConversionViewModel @Inject constructor(
 
   val rate = conversion.map { DecimalFormat("#,###.##").format(it.rate) }
 
+  val updateTime = conversion.map { "As of ${it.time}"}
+
   private var getAllCurrenciesObs: Disposable? = null
   private var currencyExchangeRateObs: Disposable? = null
 
