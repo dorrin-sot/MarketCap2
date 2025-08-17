@@ -3,9 +3,11 @@ package com.dorrin.presentation.conversion
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.toLiveData
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.entity.CurrencyExchangeRateEntity
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
@@ -13,6 +15,7 @@ import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import com.dorrin.domain.usecase.GetCurrencyUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.disposables.Disposable
 import java.text.DecimalFormat
 import javax.inject.Inject
@@ -32,11 +35,23 @@ internal class ConversionViewModel @Inject constructor(
   private var _targetCurrencyShortName = MutableLiveData<String?>(null)
   val targetCurrencyShortName: LiveData<String?> get() = _targetCurrencyShortName
 
-  private val _sourceCurrency = MutableLiveData<CurrencyEntity?>()
-  val sourceCurrency: LiveData<CurrencyEntity?> get() = _sourceCurrency
+  val sourceCurrency: LiveData<CurrencyEntity> = sourceCurrencyShortName
+    .switchMap { shortName ->
+      shortName ?: return@switchMap liveData { }
 
-  private val _targetCurrency = MutableLiveData<CurrencyEntity?>()
-  val targetCurrency: LiveData<CurrencyEntity?> get() = _targetCurrency
+      currencyUseCase(shortName)
+        .toFlowable(BackpressureStrategy.DROP)
+        .toLiveData()
+    }
+
+  val targetCurrency: LiveData<CurrencyEntity> = targetCurrencyShortName
+    .switchMap { shortName ->
+      shortName ?: return@switchMap liveData { }
+
+      currencyUseCase(shortName)
+        .toFlowable(BackpressureStrategy.DROP)
+        .toLiveData()
+    }
 
   private var _conversion = MutableLiveData(CurrencyExchangeRateEntity.empty())
   private val conversion: LiveData<CurrencyExchangeRateEntity> get() = _conversion
@@ -47,31 +62,9 @@ internal class ConversionViewModel @Inject constructor(
 
   private var getAllCurrenciesObs: Disposable? = null
   private var currencyExchangeRateObs: Disposable? = null
-  private var sourceCurrencyObs: Disposable? = null
-  private var targetCurrencyObs: Disposable? = null
-
-  private val sourceCurrencyShortnameObs = Observer<String?> { shortName ->
-    performConversion()
-    shortName ?: return@Observer
-    sourceCurrencyObs?.dispose()
-    sourceCurrencyObs = currencyUseCase(shortName)
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe { _sourceCurrency.value = it }
-  }
-  private val targetCurrencyShortNameObs = Observer<String?> { shortName ->
-    performConversion()
-    shortName ?: return@Observer
-    targetCurrencyObs?.dispose()
-    targetCurrencyObs = currencyUseCase(shortName)
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe { _targetCurrency.value = it }
-  }
 
   init {
     fetchAllCurrencies()
-
-    sourceCurrencyShortName.observeForever(sourceCurrencyShortnameObs)
-    targetCurrencyShortName.observeForever(targetCurrencyShortNameObs)
   }
 
   private fun fetchAllCurrencies() {
@@ -137,9 +130,5 @@ internal class ConversionViewModel @Inject constructor(
     super.onCleared()
     getAllCurrenciesObs?.dispose()
     currencyExchangeRateObs?.dispose()
-    sourceCurrencyObs?.dispose()
-    targetCurrencyObs?.dispose()
-    sourceCurrencyShortName.removeObserver(sourceCurrencyShortnameObs)
-    targetCurrencyShortName.removeObserver(targetCurrencyShortNameObs)
   }
 }
