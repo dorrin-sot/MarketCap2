@@ -6,19 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.toLiveData
 import com.dorrin.domain.entity.CurrencyEntity
 import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.core.BackpressureStrategy.LATEST
 import javax.inject.Inject
 
 @HiltViewModel
 internal class CurrencyListViewModel @Inject constructor(
   private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase,
 ) : ViewModel() {
-  private var _allCurrencies = MutableLiveData<List<CurrencyEntity>>()
-  val allCurrencies: LiveData<List<CurrencyEntity>> get() = _allCurrencies
+  val allCurrencies: LiveData<List<CurrencyEntity>> = getAllCurrenciesUseCase()
+    .toFlowable(LATEST)
+    .toLiveData()
 
   private var _currencyQuery = MutableLiveData<String?>(null)
   val currencyQuery: LiveData<String?> get() = _currencyQuery
@@ -31,25 +32,7 @@ internal class CurrencyListViewModel @Inject constructor(
         }
     }.distinctUntilChanged()
 
-  private var getAllCurrenciesObs: Disposable? = null
-
-  init {
-    fetchAllCurrencies()
-  }
-
-  private fun fetchAllCurrencies() {
-    getAllCurrenciesObs?.dispose()
-    getAllCurrenciesObs = getAllCurrenciesUseCase()
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe { _allCurrencies.value = it }
-  }
-
   fun search(query: String?) {
     _currencyQuery.value = query?.ifEmpty { null }
-  }
-
-  override fun onCleared() {
-    super.onCleared()
-    getAllCurrenciesObs?.dispose()
   }
 }
