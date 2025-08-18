@@ -14,8 +14,8 @@ import com.dorrin.domain.usecase.GetAllCurrenciesUseCase
 import com.dorrin.domain.usecase.GetCurrencyExchangeRateUseCase
 import com.dorrin.domain.usecase.GetCurrencyUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.BackpressureStrategy
+import io.reactivex.rxjava3.core.BackpressureStrategy.LATEST
 import io.reactivex.rxjava3.disposables.Disposable
 import java.text.DecimalFormat
 import javax.inject.Inject
@@ -27,7 +27,7 @@ internal class ConversionViewModel @Inject constructor(
   private val currencyUseCase: GetCurrencyUseCase,
 ) : ViewModel() {
   val allCurrencies: LiveData<List<CurrencyEntity>> = getAllCurrenciesUseCase()
-    .toFlowable(BackpressureStrategy.DROP)
+    .toFlowable(LATEST)
     .toLiveData()
 
   private var _sourceCurrencyShortName = MutableLiveData<String?>(null)
@@ -38,30 +38,38 @@ internal class ConversionViewModel @Inject constructor(
 
   val sourceCurrency: LiveData<CurrencyEntity> = sourceCurrencyShortName
     .switchMap { shortName ->
-      shortName ?: return@switchMap liveData { }
+      shortName ?: return@switchMap liveData { CurrencyEntity.empty() }
 
       currencyUseCase(shortName)
-        .toFlowable(BackpressureStrategy.DROP)
+        .toFlowable(LATEST)
         .toLiveData()
     }
 
   val targetCurrency: LiveData<CurrencyEntity> = targetCurrencyShortName
     .switchMap { shortName ->
-      shortName ?: return@switchMap liveData { }
+      shortName ?: return@switchMap liveData { CurrencyEntity.empty() }
 
       currencyUseCase(shortName)
+        .toFlowable(LATEST)
+        .toLiveData()
+    }
+
+  private val sourceTargetCurrencyPair: LiveData<Pair<CurrencyEntity, CurrencyEntity>> =
+    sourceCurrency.switchMap { source -> targetCurrency.map { target -> source to target } }
+
+  private val conversion: LiveData<CurrencyExchangeRateEntity> = sourceTargetCurrencyPair
+    .switchMap { (source, target) ->
+      if (source.isEmpty() || target.isEmpty())
+        return@switchMap liveData { CurrencyExchangeRateEntity.empty() }
+
+      currencyExchangeRateUseCase(source, target)
         .toFlowable(BackpressureStrategy.DROP)
         .toLiveData()
     }
 
-  private var _conversion = MutableLiveData(CurrencyExchangeRateEntity.empty())
-  private val conversion: LiveData<CurrencyExchangeRateEntity> get() = _conversion
-
   val rate = conversion.map { DecimalFormat("#,###.##").format(it.rate) }
 
   val updateTime = conversion.map { "As of ${it.time}" }
-
-  private var currencyExchangeRateObs: Disposable? = null
 
   fun selectSourceCurrency(position: Int) {
     Log.d("ConversionViewModel", "selectSourceCurrency - $position")
@@ -83,34 +91,10 @@ internal class ConversionViewModel @Inject constructor(
     _targetCurrencyShortName.value = shortName
   }
 
-  fun performConversion() {
-    Log.d(
-      "ConversionViewModel",
-      "performConversion - ${sourceCurrency.value}, ${targetCurrency.value}"
-    )
-    _conversion.value = CurrencyExchangeRateEntity.empty()
-
-    val empty = CurrencyEntity.empty()
-    val source = sourceCurrency.value ?: empty
-    val target = targetCurrency.value ?: empty
-
-    if (source == empty || target == empty) return
-
-    currencyExchangeRateObs?.dispose()
-    currencyExchangeRateObs = currencyExchangeRateUseCase(source, target)
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe { _conversion.value = it }
-  }
-
   fun swapCurrencies() {
     val source = sourceCurrencyShortName.value
     val target = targetCurrencyShortName.value
     _sourceCurrencyShortName.value = target
     _targetCurrencyShortName.value = source
-  }
-
-  override fun onCleared() {
-    super.onCleared()
-    currencyExchangeRateObs?.dispose()
   }
 }

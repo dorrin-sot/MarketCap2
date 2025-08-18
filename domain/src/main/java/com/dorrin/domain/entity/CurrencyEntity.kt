@@ -4,6 +4,8 @@ data class CurrencyEntity(
   val shortName: String,
   val longName: String,
 ) {
+  fun isEmpty(): Boolean = this == empty()
+
   override fun toString(): String {
     return "$shortName - $longName"
   }
